@@ -1,0 +1,45 @@
+{% extends 'base_generic.html' %}
+
+{% block banner %} {% endblock %}
+
+{% block main_headertext %}
+    <h2>Login</h2>
+{% endblock %}
+
+{% block content %}
+    {% if form.errors %}
+        <p>Your username and password didn't match. Please try again.</p>
+    {% endif %}
+
+    {% if next %}
+        {% if user.is_authenticated %}
+            <p>Your account doesn't have access to this page. To proceed,
+            please login with an account that has access.</p>
+        {% else %}
+            <p>Please login to see this page.</p>
+        {% endif %}
+    {% endif %}
+
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="row gtr-50 gtr-uniform">
+            <div class="col-12">
+                <input type="text" name="username" id="username" value="" placeholder="Username" />
+            </div>
+            <div class="col-12">
+                <input type="password" name="password" id="password" value="" placeholder="Password" />
+            </div>
+            <div class="col-12">
+                <ul class="actions special">
+                    <li><input type="submit" value="Login" /></li>
+                    <li><a href="{% url 'password_reset' %}" class="button alt">Forgot password?</a></li>
+                    <input type="hidden" name="next" value="{{ next }}" />
+                </ul>
+            </div>
+        </div>
+    </form>
+
+
+    {# Assumes you setup the password_reset view in your URLconf #}
+    <!-- <p><a href="{% url 'password_reset' %}">Forgot password?</a></p> -->
+{% endblock %}

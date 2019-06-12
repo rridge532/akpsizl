@@ -1,0 +1,64 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+<!-- Main -->
+{% block main %}
+	<section id="main" class="container">
+
+		<section class="box special">
+			<header class="major">
+				<h2>Welcome to the AKPsi ZL Homepage</h2>
+				<p>Alpha Kappa Psi Zeta Lambda at University of Tennessee is a coed professional fraternity.
+				  Alpha Kappa Psi has 190 Active Brothers and holds dozens of events per semester.</p>
+			</header>
+			<span class="image featured"><img src="{% static 'images/18_Fall_Retreat_RR_043.jpg' %}" alt="" /></span>
+		</section>
+
+		<div class="row">
+			<div class="col-6 col-12-narrower">
+
+				<section class="box special">
+						<span class="icon major fa-users accent2"></span>
+					<h3>Brother Portal</h3>
+					<p>Click here to login and record your attendance or rush participation.</p>
+					<ul class="actions special">
+						<li><a href="{% url 'login' %}" class="button alt">Brother Portal</a></li>
+					</ul>
+				</section>
+
+			</div>
+			<div class="col-6 col-12-narrower">
+
+				<section class="box special">
+						<span class="icon major fa-university accent4"></span>
+					<h3>Not a Brother?</h3>
+					<p>Click here to go to our public website and learn more about the fraternity.</p>
+					<ul class="actions special">
+						<li><a href="https://www.utk-akpsi.com" class="button alt">UTK AKPsi</a></li>
+					</ul>
+				</section>
+
+			</div>
+		</div>
+
+	</section>
+
+	<!-- CTA -->
+	<section id="cta">
+
+		<h2>Want to find out more?</h2>
+		<p>Sign up here to learn more about Alpha Kappa Psi and to find out how you can get involved.</p>
+
+		<form>
+			<div class="row gtr-50 gtr-uniform">
+				<div class="col-8 col-12-mobilep">
+					<input type="email" name="email" id="email" placeholder="Email Address" />
+				</div>
+				<div class="col-4 col-12-mobilep">
+					<input type="submit" value="Sign Up" class="fit" />
+				</div>
+			</div>
+		</form>
+
+	</section>
+
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'base_generic.html' %}
+
+{% block banner %} {% endblock %}
+
+{% block main_headertext %}
+    <h2>Signin Successful</h2>
+{% endblock %}
+
+{% block content %}
+    <h2>Thank you, {{ signin.user.first_name }}!</h2>
+    <p>Your sign-in at {{ signin.event.name }} has been recorded on {{ signin.time }}</p><br>
+{% endblock %}

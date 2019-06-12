@@ -1,0 +1,19 @@
+{% extends 'base_generic.html' %}
+
+{% block banner %} {% endblock %}
+
+{% block main_headertext %}
+    <h3>Sign-in for {{ event.name }}</h3>
+    <image src="{% url 'attendance:qrcodeimage' eventid=event.id %}"></image>
+{% endblock %}
+
+{% block content %}
+    <h2>Number in Attendance: {{ signincount }}</h2>
+    <h3 style="text-align:left;">Most Recent: </h3>
+    <ol style="text-align:left">
+    {% for signin in recentsignin %}
+        <li>{{ signin.user.first_name }} {{ signin.user.last_name }}</li>
+    {% endfor %}
+    </ol>
+{% endblock %}
+

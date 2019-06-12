@@ -1,0 +1,8 @@
+akpsi.sqlite3
+.vscode
+
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.pyc
