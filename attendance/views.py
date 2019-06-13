@@ -33,6 +33,7 @@ def get_userfromprofile(profile):
     user = User.objects.get(pk=profile.pk)
     return user
 
+# Get the profile object from a profile's pk; useful for grabbing a user's profile attributes
 def get_profilefromuser(user):
     profile = Profile.objects.get(pk=user.pk)
     return profile
@@ -84,7 +85,6 @@ def signinsuccess(request, eventid):
         'signin': signin,
     }
     return render(request, 'attendance/signinsuccess.html', context=context)
-    
 
 @login_required
 def index(request):
@@ -110,7 +110,7 @@ def handler500(request):
     }
     return render(request, '500.html', context, status=500)
 
-# From getattendance
+# From getattendance; 
 def attendancedraft(request):
     time = getprettydatetime()
     brotherlist = 'Name \n'
@@ -121,6 +121,3 @@ def attendancedraft(request):
         # print(user)
         brotherlist += str(user) + '\n'
     return HttpResponse(brotherlist, content_type='text/plain')
-
-
-
