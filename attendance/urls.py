@@ -9,4 +9,5 @@ urlpatterns = [
     path('<int:eventid>/signinqr', views.signinqr, name='signinqr'),
     path('<int:eventid>/<str:eventslug>/signin/', views.signinapi, name='signinapi'),
     path('<int:eventid>/signinsuccess/', views.signinsuccess, name='signinsuccess'),
+    path('<int:eventid>/eventattendance/', views.eventattendance, name='eventattendance'),
 ]

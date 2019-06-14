@@ -110,6 +110,18 @@ def handler500(request):
     }
     return render(request, '500.html', context, status=500)
 
+# Adapted from getsimpleattendance
+def eventattendance(request, eventid):
+    event = get_object_or_404(Event, id=eventid)
+    signincount = Signin.objects.filter(event=event).count()
+    attendees = [signin.user for signin in Signin.objects.filter(event=event).order_by('user__last_name')]
+    context = {
+        'event': event,
+        'signincount': signincount,
+        'attendees': attendees,
+    }
+    return render(request, 'attendance/eventattendance.html', context=context)
+
 # From getattendance; 
 def attendancedraft(request, eventid):
     event = get_object_or_404(Event, id=eventid)
