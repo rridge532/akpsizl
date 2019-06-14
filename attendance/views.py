@@ -111,13 +111,11 @@ def handler500(request):
     return render(request, '500.html', context, status=500)
 
 # From getattendance; 
-def attendancedraft(request):
-    time = getprettydatetime()
+def attendancedraft(request, eventid):
+    event = get_object_or_404(Event, id=eventid)
     brotherlist = 'Name \n'
     brothers = Profile.objects.filter(isbrother=1).all()
     for brother in brothers:
-        # print(brother)
         user = get_userfromprofile(brother)
-        # print(user)
-        brotherlist += str(user) + '\n'
+        attendeelist += str() + '\n'
     return HttpResponse(brotherlist, content_type='text/plain')
