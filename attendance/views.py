@@ -122,3 +122,34 @@ def eventattendance(request, eventid):
         'containersize': 'medium',
     }
     return render(request, 'attendance/eventattendance.html', context=context)
+
+# Takes eventgroup object and signins object and provides signins for that group
+class eventgroupsignins(object):
+    def __init__(self, eventgroup, signins):
+        self.eventgroup = eventgroup
+        self.signins = signins.filter(event__group=eventgroup)
+    
+    def count(self):
+        return sum(signin.event.credits for signin in self.signins)
+
+# Take userid as input otherwise use request.user
+# Provide attendance broken down by event group. Include the count of attendance for that group
+@login_required
+def userattendance(request, userid=None):
+    if request.user.profile.isexec and userid is not None:
+        user=userid
+    else:
+        user=request.user
+    signins = Signin.objects.filter(user=user)
+    eventgroups = EventGroup.objects.all().order_by('name')
+    # eventgroupsignins = [signins.filter(event__group=eventgroup) for eventgroup in eventgroups]
+    # signincount = len(eventgroupsignins)
+    evgsignins = {eventgroupsignins(eventgroup, signins) for eventgroup in eventgroups}
+    evgsignins = sorted(evgsignins, key=lambda x: x.eventgroup.name)
+    # evgsignins.signins = sorted(evgsignins.signins, key=lambda x: x.signin.time)
+    context = {
+        'signins': signins,
+        'eventgroups': eventgroups,
+        'evgsignins': evgsignins,
+    }
+    return render(request, 'attendance/userattendance.html', context=context)
