@@ -114,20 +114,11 @@ def handler500(request):
 def eventattendance(request, eventid):
     event = get_object_or_404(Event, id=eventid)
     signincount = Signin.objects.filter(event=event).count()
-    attendees = [signin.user for signin in Signin.objects.filter(event=event).order_by('user__last_name')]
+    signins = Signin.objects.filter(event=event).order_by('user__last_name')
     context = {
         'event': event,
         'signincount': signincount,
-        'attendees': attendees,
+        'signins': signins,
+        'containersize': 'medium',
     }
     return render(request, 'attendance/eventattendance.html', context=context)
-
-# From getattendance; 
-def attendancedraft(request, eventid):
-    event = get_object_or_404(Event, id=eventid)
-    brotherlist = 'Name \n'
-    brothers = Profile.objects.filter(isbrother=1).all()
-    for brother in brothers:
-        user = get_userfromprofile(brother)
-        attendeelist += str() + '\n'
-    return HttpResponse(brotherlist, content_type='text/plain')

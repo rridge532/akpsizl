@@ -9,9 +9,30 @@
 
 {% block content %}
     <h3>Attendance: {{ signincount }}</h3>
-    <ol style="text-align:left;">
+    <!-- <ol style="text-align:left;">
     {% for attendee in attendees %}
-        <li>{{ attendee.first_name }} {{ attendee.last_name }}</li>
+        <li>{{ attendee.user.first_name }} {{ attendee.user.last_name }}</li>
     {% endfor %}
-    </ol>
+    </ol> -->
+
+    <div class="table-wrapper" style="text-align:left;">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 15%">First Name</th>
+                    <th style="width: 15%">Last Name</th>
+                    <th style="width: 60%">Signin Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for signin in signins %}
+                <tr>
+                    <td>{{ signin.user.first_name }}</td>
+                    <td>{{ signin.user.last_name }}</td>
+                    <td>{{ signin.time }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
