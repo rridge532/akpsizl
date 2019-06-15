@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -58,6 +57,10 @@ class Event(models.Model):
     def __str__(self):
         return self.name
 #        return str(self.group) + ': ' + self.name + ' (' + str(self.credits) + ')'
+
+    def short_date(self):
+        short_date = self.date.strftime("%m/%d")
+        return short_date
 
 @receiver(post_save, sender=Event)
 def generate_random_slug(sender, instance, created, **kwargs):
