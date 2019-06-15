@@ -17,7 +17,6 @@ class Profile(models.Model):
     isloa = models.BooleanField(default=0)
     issenior = models.BooleanField(default=0)
 
-
     def __str__(self):
         return self.user.username
 
@@ -26,7 +25,6 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
     instance.profile.save()
-
 
 def validate_not_negative(value):
     if value < 0:
