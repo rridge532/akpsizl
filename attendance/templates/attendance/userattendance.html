@@ -4,19 +4,21 @@
 
 {% block main_headertext %}
     <h3>Credits for {{ user.first_name }} {{ user.last_name }} </h3>
-    <h4>Senior Status: {{ user.profile.issenior }}</h4>
-    <h4>LOA Status: {{ user.profile.isloa }}</h4>
+    <h4>Senior Status: {% if user.profile.issenior %} Yes {% else %} No {% endif %}</h4>
+    <h4>LOA Status: {% if user.profile.isloa %} Yes {% else %} No {% endif %}</h4>
     {% endblock %}
 
 {% block content %}
     {% for evg in evgsignins %}
         <h3>{{ evg.eventgroup.name|title }}</h3>
         <p>
-            Credits Needed: {{ evg.eventgroup.needed_credits }} (Seniors: {{ evg.eventgroup.senior_credits }})
-            <br>Credits Earned: {{ evg.count }}</p>
+            Credits Needed: {{ evg.eventgroup.needed_credits }} {% if user.profile.issenior %} <strong> {% endif %} (Seniors: {{ evg.eventgroup.senior_credits }}) </strong>
+            <br>Credits Earned: {{ evg.count }}
         </p>
+        
         {% for signin in evg.signins %}
             <li>{{ signin.event }} ({{ signin.event.credits }})</li>
         {% endfor %}
+        <hr>
     {% endfor %}
 {% endblock%}
