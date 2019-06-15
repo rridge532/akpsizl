@@ -17,7 +17,7 @@
         </p>
         
         {% for signin in evg.signins %}
-            <li>{{ signin.event }} {{ signin.event.short_date }} ({{ signin.event.credits }})</li>
+            <li>{{ signin.event }} ({{ signin.event.short_date }}) ({{ signin.event.credits }})</li>
         {% endfor %}
         <hr>
     {% endfor %}
