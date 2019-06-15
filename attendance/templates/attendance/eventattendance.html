@@ -8,6 +8,9 @@
 {% endblock %}
 
 {% block content %}
+    {% if signincount < 1 %}
+    <h3>There are no attendees</h3>>
+    {% else %}
     <h3>Attendance: {{ signincount }}</h3>
     <!-- <ol style="text-align:left;">
     {% for attendee in attendees %}
@@ -35,4 +38,5 @@
             </tbody>
         </table>
     </div>
+    {% endif %}
 {% endblock %}
