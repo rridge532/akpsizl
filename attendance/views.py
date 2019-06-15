@@ -119,7 +119,7 @@ class eventgroupsignins(object):
     def __init__(self, eventgroup, signins):
         self.eventgroup = eventgroup
         self.signins = signins.filter(event__group=eventgroup)
-    
+
     def count(self):
         return sum(signin.event.credits for signin in self.signins)
 

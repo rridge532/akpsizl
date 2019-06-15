@@ -59,9 +59,6 @@ class Event(models.Model):
         return self.name
 #        return str(self.group) + ': ' + self.name + ' (' + str(self.credits) + ')'
 
-    class Meta:
-        ordering = ('date','group','name')
-
 @receiver(post_save, sender=Event)
 def generate_random_slug(sender, instance, created, **kwargs):
     if created:
