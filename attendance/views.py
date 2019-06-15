@@ -3,6 +3,7 @@ from django.utils.crypto import get_random_string
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.urls import reverse
 from datetime import datetime
 from django.utils import timezone
@@ -114,11 +115,14 @@ def eventattendance(request, eventid):
     return render(request, 'attendance/eventattendance.html', context=context)
 
 # Takes eventgroup object and signins object and provides signins for that group
-@login_required
 class eventgroupsignins(object):
     def __init__(self, eventgroup, signins):
         self.eventgroup = eventgroup
         self.signins = signins.filter(event__group=eventgroup)
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(eventgroupsignins, self).dispatch(*args, **kwargs)
 
     def count(self):
         return sum(signin.event.credits for signin in self.signins)
