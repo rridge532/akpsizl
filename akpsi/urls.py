@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic.base import TemplateView
 from django.contrib.auth import views as auth_views
-from attendance import views as attendance_views
+from base import views as base_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,5 +31,5 @@ urlpatterns = [
     path('contact.html', TemplateView.as_view(template_name='contact.html'), name='contact'),
 ]
 
-handler404 = attendance_views.handler404
-handler500 = attendance_views.handler500
+handler404 = base_views.handler404
+handler500 = base_views.handler500

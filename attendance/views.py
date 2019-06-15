@@ -8,8 +8,8 @@ from django.urls import reverse
 from datetime import datetime
 from django.utils import timezone
 from django.views import View
-from django.contrib import messages
-from random import randint
+# from django.contrib import messages
+# from random import randint
 import qrcode
 
 from .models import Event, EventGroup, Profile, Signin
@@ -79,30 +79,6 @@ def signinsuccess(request, eventid):
         'signin': signin,
     }
     return render(request, 'attendance/signinsuccess.html', context=context)
-
-@login_required
-def index(request):
-    return HttpResponse('Hello world')    
-
-# Handles 404 errors to show a custom page
-def handler404(request, exception):
-    message = [
-        "Whoops, looks like the page you're looking for doesn't exist.",
-    ]
-    context = {
-        'message': message[randint(0,1)]
-    }
-    return render(request, '404.html', context, status=404)
-
-# Handles 500 errors to show a custom page
-def handler500(request):
-    message = [
-        "Whoops, looks like the page you're looking for doesn't exist.",
-    ]
-    context = {
-        'message': message[randint(0,1)]
-    }
-    return render(request, '500.html', context, status=500)
 
 # Adapted from getsimpleattendance
 @login_required
