@@ -31,6 +31,10 @@ def get_prettydatetime(datetimeobj=''):
 
 # Create your views here.
 
+@login_required
+def portal(request):
+    return render(request, 'attendance/brotherportal.html')
+
 # From signinqr
 # Take event id and display the signin qrcode for that event
 @login_required
