@@ -142,14 +142,9 @@ def userattendance(request, userid=None):
         user=request.user
     signins = Signin.objects.filter(user=user)
     eventgroups = EventGroup.objects.all().order_by('name')
-    # eventgroupsignins = [signins.filter(event__group=eventgroup) for eventgroup in eventgroups]
-    # signincount = len(eventgroupsignins)
     evgsignins = {eventgroupsignins(eventgroup, signins) for eventgroup in eventgroups}
     evgsignins = sorted(evgsignins, key=lambda x: x.eventgroup.name)
-    # evgsignins.signins = sorted(evgsignins.signins, key=lambda x: x.signin.time)
     context = {
-        'signins': signins,
-        'eventgroups': eventgroups,
         'evgsignins': evgsignins,
     }
     return render(request, 'attendance/userattendance.html', context=context)
