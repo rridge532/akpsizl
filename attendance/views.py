@@ -111,6 +111,7 @@ def handler500(request):
     return render(request, '500.html', context, status=500)
 
 # Adapted from getsimpleattendance
+@login_required
 def eventattendance(request, eventid):
     event = get_object_or_404(Event, id=eventid)
     signincount = Signin.objects.filter(event=event).count()
@@ -124,6 +125,7 @@ def eventattendance(request, eventid):
     return render(request, 'attendance/eventattendance.html', context=context)
 
 # Takes eventgroup object and signins object and provides signins for that group
+@login_required
 class eventgroupsignins(object):
     def __init__(self, eventgroup, signins):
         self.eventgroup = eventgroup
