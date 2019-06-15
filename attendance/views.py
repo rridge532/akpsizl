@@ -28,24 +28,13 @@ def get_prettydatetime(datetimeobj=''):
     if datetimeobj == '': datetimeobj = timezone.now()
     return datetimeobj.strftime('%X on %a %b %d ')
 
-# Get the user object from a profile's pk; useful for building lists off profile attributes
-def get_userfromprofile(profile):
-    user = User.objects.get(pk=profile.pk)
-    return user
-
-# Get the profile object from a profile's pk; useful for grabbing a user's profile attributes
-def get_profilefromuser(user):
-    profile = Profile.objects.get(pk=user.pk)
-    return profile
-
 # Create your views here.
 
 # From signinqr
 # Take event id and display the signin qrcode for that event
 @login_required
 def signinqr(request, eventid):
-    profile = get_profilefromuser(request.user)
-    if profile.isexec:
+    if request.user.profile.isexec:
         event = get_object_or_404(Event, id=eventid)
         signincount = Signin.objects.filter(event=event).count()
         recentsignin = Signin.objects.filter(event=event).order_by('-time')[:5][::-1]
