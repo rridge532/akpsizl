@@ -11,7 +11,7 @@ def handler404(request, exception):
     context = {
         'message': message[randint(0,1)]
     }
-    return render(request, '404.html', context, status=404)
+    return render(request, 'base/404.html', context, status=404)
 
 # Handles 500 errors to show a custom page
 def handler500(request):
@@ -21,8 +21,8 @@ def handler500(request):
     context = {
         'message': message[randint(0,1)]
     }
-    return render(request, '500.html', context, status=500)
+    return render(request, 'base/500.html', context, status=500)
 
 @login_required
 def portal(request):
-    return render(request, 'attendance/brotherportal.html')
+    return render(request, 'base/brotherportal.html')
