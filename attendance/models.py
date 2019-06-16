@@ -9,21 +9,21 @@ from django.utils.crypto import get_random_string
 # Create your models here.
 
 # Brother Profile
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    isbrother = models.BooleanField(default=0)
-    isexec = models.BooleanField(default=0)
-    isloa = models.BooleanField(default=0)
-    issenior = models.BooleanField(default=0)
+# class Profile(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE)
+#     isbrother = models.BooleanField(default=0)
+#     isexec = models.BooleanField(default=0)
+#     isloa = models.BooleanField(default=0)
+#     issenior = models.BooleanField(default=0)
 
-    def __str__(self):
-        return self.user.username
+#     def __str__(self):
+#         return self.user.username
 
-@receiver(post_save, sender=User)
-def create_or_update_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
-    instance.profile.save()
+# @receiver(post_save, sender=User)
+# def create_or_update_user_profile(sender, instance, created, **kwargs):
+#     if created:
+#         Profile.objects.create(user=instance)
+#     instance.profile.save()
 
 def validate_not_negative(value):
     if value < 0:

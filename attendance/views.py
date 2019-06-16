@@ -12,7 +12,8 @@ from django.views import View
 # from random import randint
 import qrcode
 
-from .models import Event, EventGroup, Profile, Signin
+from .models import Event, EventGroup, Signin
+from users.models import Profile
 # Helper functions
 
 # From qrcodeimage and getqrimage with removal of signout

@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '5d1flay9h45y!!0d1ixfjq5m^kh3x#$xotd70@m8xiuf=t#f0y'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['localhost','192.168.99.100','*']
 
@@ -34,7 +34,9 @@ ALLOWED_HOSTS = ['localhost','192.168.99.100','*']
 
 INSTALLED_APPS = [
     'attendance.apps.AttendanceConfig',
-    # 'rush.apps.RushConfig',
+    'rush.apps.RushConfig',
+    'users.apps.UsersConfig',
+    'base.apps.BaseConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -128,9 +130,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, "staticfiles"),
-# ]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "staticfiles"),
+]
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
