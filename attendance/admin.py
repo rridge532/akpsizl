@@ -2,15 +2,9 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
-from .models import Profile, EventGroup, Event, Signin
+from .models import EventGroup, Event, Signin
 
 # Register your models here.
-
-class ProfileInline(admin.StackedInline):
-    model = Profile
-    can_delete = False
-    verbose_name_plural = 'Profile'
-    fk_name = 'user'
 
 class EventInline(admin.TabularInline):
     model = Event
@@ -23,14 +17,6 @@ class SigninInline(admin.TabularInline):
     extra = 0
     exclude = ['comment']
     classes = ['collapse']
-
-class CustomUserAdmin(UserAdmin):
-    inlines = [ProfileInline]
-
-    def get_inline_instances(self, request, obj=None):
-        if not obj:
-            return list()
-        return super(CustomUserAdmin, self).get_inline_instances(request, obj)
 
 class EventGroupAdmin(admin.ModelAdmin):
     fieldsets = [
@@ -55,8 +41,6 @@ class SigninAdmin(admin.ModelAdmin):
     ordering = ['-time', 'event', 'user']
     list_filter = ['event','user']
 
-admin.site.unregister(User)
-admin.site.register(User, CustomUserAdmin)
 admin.site.register(EventGroup, EventGroupAdmin)
 admin.site.register(Event, EventAdmin)
 admin.site.register(Signin, SigninAdmin)
