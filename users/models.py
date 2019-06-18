@@ -6,7 +6,7 @@ from django.dispatch import receiver
 # Create your models here.
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    isbrother = models.BooleanField(default=0)
+    isbrother = models.BooleanField(default=1)
     isexec = models.BooleanField(default=0)
     isloa = models.BooleanField(default=0)
     issenior = models.BooleanField(default=0)
