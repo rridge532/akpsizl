@@ -132,26 +132,28 @@ def brothercredits(request):
     eventgroups = EventGroup.objects.all()
     activesignins = Signin.objects.filter(user__in=activebrothers)
     usersignins = {eventgroupsignins(activebro, eventgroup, activesignins) for eventgroup in eventgroups for activebro in activebrothers}
+    seniorscredits = sum(evg.senior_credits for evg in eventgroups)
+    normalcredits = sum(evg.needed_credits for evg in eventgroups)
     for bro in activebrothers:
         evgsignins = {}
         for eventgroup in eventgroups:
             evgsignins[eventgroup] = eventgroupsignins(bro, eventgroup, activesignins)
         totalcredits = 0
-        seniorscredits = 0
-        normalcredits = 0
         creditsdict = {}
         missingcreds = False
         for eventgroup in eventgroups:
             userevgsignins = Signin.objects.filter(user=bro, event__group=eventgroup).all()
             creditsdict[eventgroup.name] = sum(signin.event.credits for signin in userevgsignins)
             totalcredits = totalcredits + sum(creditsdict.values())
-            if bro.profile.issenior:
-                if creditsdict[eventgroup.name] < eventgroup.senior_credits:
-                    missingcreds = True
-            else:
-                if creditsdict[eventgroup.name] < eventgroup.needed_credits:
-                    missingcreds = True
+            if bro.profile.issenior and creditsdict[eventgroup.name] < eventgroup.senior_credits:
+                missingcreds = True
+            elif not bro.profile.issenior and creditsdict[eventgroup.name] < eventgroup.needed_credits:
+                missingcreds = True
         totalcredits = sum(creditsdict.values())
+        if bro.profile.issenior and totalcredits < seniorcredits:
+            missingcreds = True
+        elif not bro.profile.issenior and totalcredits < normalcredits:
+            missingcreds = True
         creditsdict['Total'] = totalcredits
         if missingcreds:
             notcredits[bro] = creditsdict
