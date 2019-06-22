@@ -93,9 +93,10 @@ def eventattendance(request, eventid):
 
 # Takes eventgroup object and signins object and provides signins for that group
 class eventgroupsignins(object):
-    def __init__(self, eventgroup, signins):
+    def __init__(self, user, eventgroup, signins):
+        self.user = user
         self.eventgroup = eventgroup
-        self.signins = signins.filter(event__group=eventgroup)
+        self.signins = signins.filter(event__group=eventgroup, user=user)
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -114,9 +115,98 @@ def userattendance(request, userid=None):
         user=request.user
     signins = Signin.objects.filter(user=user)
     eventgroups = EventGroup.objects.all().order_by('name')
-    evgsignins = {eventgroupsignins(eventgroup, signins) for eventgroup in eventgroups}
+    evgsignins = {eventgroupsignins(user, eventgroup, signins) for eventgroup in eventgroups}
     evgsignins = sorted(evgsignins, key=lambda x: x.eventgroup.name)
     context = {
         'evgsignins': evgsignins,
     }
     return render(request, 'attendance/userattendance.html', context=context)
+
+# Adapted from brothercredits
+# This could be bettter
+def brothercredits(request):
+    notcredits = {}
+    hascredits = {}
+    userevgsignins = {}
+    activebrothers = User.objects.filter(profile__isbrother=1, profile__isloa=0, profile__isexec=0).all()
+    eventgroups = EventGroup.objects.all()
+    activesignins = Signin.objects.filter(user__in=activebrothers)
+    usersignins = {eventgroupsignins(activebro, eventgroup, activesignins) for eventgroup in eventgroups for activebro in activebrothers}
+    for bro in activebrothers:
+        evgsignins = {}
+        for eventgroup in eventgroups:
+            evgsignins[eventgroup] = eventgroupsignins(bro, eventgroup, activesignins)
+        totalcredits = 0
+        seniorscredits = 0
+        normalcredits = 0
+        creditsdict = {}
+        missingcreds = False
+        # if userevgsignins.user == bro:
+            # creditsdict[userevgsignins.eventgroup] = userevgsignins.count
+        for eventgroup in eventgroups:
+            # userevgsignins = usersignins.filter(event__group=eventgroup)
+            userevgsignins = Signin.objects.filter(user=bro, event__group=eventgroup).all()
+            creditsdict[eventgroup.name] = sum(signin.event.credits for signin in userevgsignins)
+            totalcredits = totalcredits + sum(creditsdict.values())
+            if bro.profile.issenior:
+                if creditsdict[eventgroup.name] < eventgroup.senior_credits:
+                    missingcreds = True
+            else:
+                if userevgsignins.count() < eventgroup.needed_credits:
+                    missingcreds = True
+        totalcredits = sum(creditsdict.values())
+        creditsdict['Total'] = totalcredits
+        if missingcreds:
+            notcredits[bro] = creditsdict
+        else:
+            hascredits[bro] = creditsdict
+
+    context = {
+        'notcredits': notcredits,
+        'hascredits': hascredits,
+        'eventgroups': eventgroups,
+        'activebrothers': activebrothers,
+        'userevgsignins': userevgsignins,
+    }
+
+    return render(request, 'attendance/brothercredits.html', context=context)
+
+# def brothercredits(request):
+#     notcredits = {}
+#     hascredits = {}
+#     activebrothers = User.objects.filter(profile__isbrother=1, profile__isloa=0, profile__isexec=0).all()
+#     eventgroups = EventGroup.objects.all()
+#     # activesignins = Signin.objects.filter(user__in=activebrothers)
+#     # evgsignins = (eventgroupsignins(eventgroup, signins) for eventgroup in eventgroups)
+#     for bro in activebrothers:
+#         totalcredits = 0
+#         seniorscredits = 0
+#         normalcredits = 0
+#         creditsdict = {}
+#         missingcreds = False
+#         # usersignins = activesignins.filter(user=bro)
+#         for eventgroup in eventgroups:
+#             # userevgsignins = usersignins.filter(event__group=eventgroup)
+#             userevgsignins = Signin.objects.filter(user=bro, event__group=eventgroup).all()
+#             creditsdict[eventgroup.name] = sum(signin.event.credits for signin in userevgsignins)
+#             totalcredits = totalcredits + sum(creditsdict.values())
+#             if bro.profile.issenior:
+#                 if userevgsignins.count() < eventgroup.senior_credits:
+#                     missingcreds = True
+#             else:
+#                 if userevgsignins.count() < eventgroup.needed_credits:
+#                     missingcreds = True
+#         totalcredits = sum(creditsdict.values())
+#         creditsdict['Total'] = totalcredits
+#         if missingcreds:
+#             notcredits[bro] = creditsdict
+#         else:
+#             hascredits[bro] = creditsdict
+
+#     context = {
+#         'notcredits': notcredits,
+#         'hascredits': hascredits,
+#         'eventgroups': eventgroups,
+#     }
+
+#     return render(request, 'attendance/brothercredits.html', context=context)

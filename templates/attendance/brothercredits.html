@@ -1,0 +1,53 @@
+{% extends 'base/base_generic.html' %}
+
+{% block banner %} {% endblock %}
+
+{% block main_headertext %}
+    <h3>Brother Credits</h3>
+{% endblock %}
+
+
+{% block content %}
+
+    <h3>Brothers without all credits:</h3>
+    {% for bro, credits in notcredits.items %}
+    <h4>{{bro.first_name}} {{bro.last_name}}</h4>
+    {% for evg, evgcredits in credits.items %}
+    {{evg}}: {{evgcredits}}, 
+    {% endfor %}
+    <br> <br>
+    {% endfor %}
+    <div class="table-wrapper" style="text-align:left;">
+        <table>
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    {% for evg in eventgroups %}
+                    <th style="text-align:right;">{{evg}} ({{evg.needed_credits}})</th>
+                    {% endfor %}
+                    <th style="text-align:right;">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bro, credits in notcredits.items %}
+                
+                <tr>
+                    <td>{{ bro.first_name }}</td>
+                    <td>{{ bro.last_name }}</td>
+                    {% for evgcredits in credits.values %}
+                    <td style="text-align:right;">{{ evgcredits }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <hr />
+    <h3>Brothers with all credits:</h3>
+    {% for bro in hascredits %}
+    <h4>{{bro.0.first_name}} {{bro.0.last_name}}</h4>
+    {{bro.1}}, Total: {{bro.2}}<br> <br>
+    {% endfor %}
+
+{% endblock %}
