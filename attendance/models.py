@@ -17,7 +17,7 @@ def validate_not_negative(value):
 
 # Event Types
 class EventGroup(models.Model):
-    name = models.CharField(max_length=100, null=False)
+    name = models.CharField(max_length=100, null=False, unique=True)
     needed_credits = models.IntegerField(default=0, null=False, validators=[validate_not_negative])
     senior_credits = models.IntegerField(default=0, null=False, validators=[validate_not_negative])
 
@@ -30,6 +30,7 @@ class EventGroup(models.Model):
     def credits_available(self):
         return sum(x['credits'] for x in Event.objects.filter(group=self).values('credits'))
 
+# Events
 class Event(models.Model):
     name = models.CharField(max_length=100, null=False)
     group = models.ForeignKey(EventGroup, on_delete=models.SET_NULL, null=True)
