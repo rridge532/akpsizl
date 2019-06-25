@@ -44,7 +44,7 @@ def exec_check(user):
 @user_passes_test(brother_check, redirect_field_name=None)
 def signinqr(request, eventid):
     event = get_object_or_404(Event, id=eventid)
-    if request.user in event.group.members.iterator() or request.user.profile.isexec:
+    if request.user.memberofgroup(event.group) or request.user.profile.isexec:
         signincount = Signin.objects.filter(event=event).count()
         recentsignin = Signin.objects.filter(event=event).order_by('-time')[:5][::-1]
         context = {
@@ -92,15 +92,17 @@ def signinsuccess(request, eventid):
 @user_passes_test(brother_check, redirect_field_name=None)
 def eventattendance(request, eventid):
     event = get_object_or_404(Event, id=eventid)
-    # if request.user.memberofgroup(EventGroup.objects.filter(event=event))
-    signincount = Signin.objects.filter(event=event).count()
-    signins = Signin.objects.filter(event=event).order_by('user__last_name')
-    context = {
-        'event': event,
-        'signincount': signincount,
-        'signins': signins,
-        'containersize': 'medium',
-    }
+    if request.user.memberofgroup(event.group) or request.user.profile.isexec:
+        signincount = Signin.objects.filter(event=event).count()
+        signins = Signin.objects.filter(event=event).order_by('user__last_name')
+        context = {
+            'event': event,
+            'signincount': signincount,
+            'signins': signins,
+            'containersize': 'medium',
+        }
+    else:
+        raise Exception('Not so fast')
     return render(request, 'attendance/eventattendance.html', context=context)
 
 # Takes eventgroup object and signins object and provides signins for that group
