@@ -4,6 +4,13 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 # Create your models here.
+
+def brother_check(user):
+    return user.profile.issenior
+
+def exec_check(user):
+    return user.profile.isexec
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     isbrother = models.BooleanField(default=True)

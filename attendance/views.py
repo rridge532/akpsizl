@@ -13,7 +13,7 @@ from django.views import View
 import qrcode
 
 from .models import Event, EventGroup, Signin, TeamMembership
-from users.models import Profile
+from users.models import Profile, brother_check, exec_check
 # Helper functions
 
 # From qrcodeimage and getqrimage with removal of signout
@@ -29,12 +29,6 @@ def qrcodeimage(request, eventid):
 def get_prettydatetime(datetimeobj=''):
     if datetimeobj == '': datetimeobj = timezone.now()
     return datetimeobj.strftime('%X on %a %b %d ')
-
-def brother_check(user):
-    return user.profile.issenior
-
-def exec_check(user):
-    return user.profile.isexec
 
 # Create your views here.
 
