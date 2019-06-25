@@ -15,6 +15,13 @@ def validate_not_negative(value):
             params={'value': value},
         )
 
+def make_iterator(s):
+    try:
+        len(s)
+        return s
+    except TypeError:
+        return [s]
+
 # Event Types
 class EventGroup(models.Model):
     name = models.CharField(max_length=100, null=False, unique=True)
@@ -68,3 +75,46 @@ class Signin(models.Model):
 
     class Meta:
         unique_together = ('event', 'user')
+
+# Define extra user attributes to make views easier
+class UserFunctions:
+    def __init__(self):
+        self.signins = Signin.objects.filter(user=self)
+        self.totalcredits = sum(signin.event.credits for signin in self.signins)
+
+    # def get_activebrother(self):
+    #     if self.profile.isbrother and not self.profile.isloa and not self.profile.isexec:
+    #         return True
+    #     return False
+
+    # isactivebrother = property(get_activebrother)
+    
+    def eventgroupsignins(self, eventgroup):
+        evgsignins = self.signins.filter(event__group=eventgroup)
+        return evgsignins
+    
+    def eventgroupcredits(self, eventgroup):
+        evgsignins = self.eventgroupsignins(eventgroup)
+        evgcredits = sum(signin.event.credits for signin in evgsignins)
+        return evgcredits
+
+    def neededcredits(self, eventgroups):
+        if self.profile.issenior:
+            neededcredits = sum(evg.senior_credits for evg in make_iterator(eventgroups))
+        else:
+            neededcredits = sum(evg.needed_credits for evg in make_iterator(eventgroups))
+        return neededcredits
+
+    def missingcredits(self):
+        eventgroups = EventGroup.objects.all()
+        if self.totalcredits < self.neededcredits(eventgroups):
+            return True
+        for eventgroup in eventgroups:
+            evgcredits = self.eventgroupcredits(eventgroup)
+            if evgcredits < self.neededcredits(eventgroup):
+                return True
+        return False
+    
+    missingcredits = property(missingcredits)
+
+User.__bases__ += (UserFunctions,)
