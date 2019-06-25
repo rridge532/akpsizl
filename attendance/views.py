@@ -41,7 +41,7 @@ def exec_check(user):
 # From signinqr
 # Take event id and display the signin qrcode for that event
 @login_required
-@user_passes_test(brother_check, redirect_field_name=NotImplementedError)
+@user_passes_test(brother_check, redirect_field_name=None)
 def signinqr(request, eventid):
     event = get_object_or_404(Event, id=eventid)
     if request.user in event.group.members.iterator() or request.user.profile.isexec:
