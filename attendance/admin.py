@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import EventGroup, Event, Signin
+from .models import EventGroup, Event, Signin, TeamMembership
 
 # Register your models here.
 
@@ -42,3 +42,4 @@ class SigninAdmin(admin.ModelAdmin):
 admin.site.register(EventGroup, EventGroupAdmin)
 admin.site.register(Event, EventAdmin)
 admin.site.register(Signin, SigninAdmin)
+admin.site.register(TeamMembership)

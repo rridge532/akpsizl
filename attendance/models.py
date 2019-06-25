@@ -27,6 +27,7 @@ class EventGroup(models.Model):
     name = models.CharField(max_length=100, null=False, unique=True)
     needed_credits = models.IntegerField(default=0, null=False, validators=[validate_not_negative])
     senior_credits = models.IntegerField(default=0, null=False, validators=[validate_not_negative])
+    members = models.ManyToManyField(User, through='TeamMembership',through_fields=('group', 'user'))
 
     def __str__(self):
         return self.name
@@ -36,6 +37,18 @@ class EventGroup(models.Model):
 
     def credits_available(self):
         return sum(x['credits'] for x in Event.objects.filter(group=self).values('credits'))
+
+class TeamMembership(models.Model):
+    group = models.ForeignKey(EventGroup, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    chair = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user.username + ' (' + self.group.name + ')'
+
+    class Meta:
+        unique_together = ('group', 'user')
+        verbose_name_plural = "Team Membership"
 
 # Events
 class Event(models.Model):
@@ -116,5 +129,10 @@ class UserFunctions:
         return False
     
     missingcredits = property(missingcredits)
+
+    def memberofgroup(self, eventgroup):
+        if self in eventgroup.members.iterator():
+            return True
+        return False
 
 User.__bases__ += (UserFunctions,)

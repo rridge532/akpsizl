@@ -2,7 +2,7 @@ from django.shortcuts import render, HttpResponse, HttpResponseRedirect, get_obj
 from django.utils.crypto import get_random_string
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 from datetime import datetime
@@ -12,7 +12,7 @@ from django.views import View
 # from random import randint
 import qrcode
 
-from .models import Event, EventGroup, Signin
+from .models import Event, EventGroup, Signin, TeamMembership
 from users.models import Profile
 # Helper functions
 
@@ -30,14 +30,21 @@ def get_prettydatetime(datetimeobj=''):
     if datetimeobj == '': datetimeobj = timezone.now()
     return datetimeobj.strftime('%X on %a %b %d ')
 
+def brother_check(user):
+    return user.profile.issenior
+
+def exec_check(user):
+    return user.profile.isexec
+
 # Create your views here.
 
 # From signinqr
 # Take event id and display the signin qrcode for that event
 @login_required
+@user_passes_test(brother_check, redirect_field_name=NotImplementedError)
 def signinqr(request, eventid):
-    if request.user.profile.isexec:
-        event = get_object_or_404(Event, id=eventid)
+    event = get_object_or_404(Event, id=eventid)
+    if request.user in event.group.members.iterator() or request.user.profile.isexec:
         signincount = Signin.objects.filter(event=event).count()
         recentsignin = Signin.objects.filter(event=event).order_by('-time')[:5][::-1]
         context = {
@@ -45,11 +52,14 @@ def signinqr(request, eventid):
             'signincount': signincount,
             'recentsignin': recentsignin,
         }
+    else:
+        raise Exception('Not so fast')
     return render(request, 'attendance/signinqr.html', context=context)
 
 # From signinapi
 # Takes event and user info to create a signin with basic manual signin prevention
 @login_required
+@user_passes_test(brother_check, redirect_field_name=None)
 def signinapi(request, eventid, eventslug):
     user = request.user
     event = get_object_or_404(Event, id=eventid)
@@ -62,12 +72,12 @@ def signinapi(request, eventid, eventslug):
     # Slug doesn't match, possibly somebody faking a signin, raise an exception
     else:
         raise Exception('Not so fast')
-        
     return HttpResponseRedirect(reverse('attendance:signinsuccess', args=(eventid,)))
 
 # Adapted from thank
 # Returns signinsuccess if signin exists for that user for that event. Throws an error otherwise.
 @login_required
+@user_passes_test(brother_check, redirect_field_name=None)
 def signinsuccess(request, eventid):
     user = request.user
     event = Event.objects.get(id=eventid)
@@ -79,8 +89,10 @@ def signinsuccess(request, eventid):
 
 # Adapted from getsimpleattendance
 @login_required
+@user_passes_test(brother_check, redirect_field_name=None)
 def eventattendance(request, eventid):
     event = get_object_or_404(Event, id=eventid)
+    # if request.user.memberofgroup(EventGroup.objects.filter(event=event))
     signincount = Signin.objects.filter(event=event).count()
     signins = Signin.objects.filter(event=event).order_by('user__last_name')
     context = {
@@ -124,6 +136,8 @@ def userattendance(request, userid=None):
 
 # Adapted from brothercredits
 # This could be bettter
+@login_required
+@user_passes_test(exec_check, redirect_field_name=None)
 def brothercredits(request):
     notcredits = {}
     hascredits = {}
