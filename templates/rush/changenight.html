@@ -1,0 +1,15 @@
+{% extends 'base/base_generic.html' %}
+
+{% block banner %} {% endblock %}
+
+{% block main_headertext %}
+Change Rush Night
+{% endblock %}
+
+{% block content %}
+    <form action="{% url 'rush:changenight' %}" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Change" />
+    </form>
+{% endblock %}

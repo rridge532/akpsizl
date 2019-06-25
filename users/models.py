@@ -13,7 +13,7 @@ def exec_check(user):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    isbrother = models.BooleanField(default=True)
+    isbrother = models.BooleanField(default=False)
     isexec = models.BooleanField(default=False)
     isloa = models.BooleanField(default=False)
     issenior = models.BooleanField(default=False)

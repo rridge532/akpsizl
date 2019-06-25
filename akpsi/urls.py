@@ -22,7 +22,7 @@ from base import views as base_views
 urlpatterns = [
     path('exec/', admin.site.urls),
     path('attendance/', include('attendance.urls')),
-    # path('rush/', include('rush.urls')),
+    path('rush/', include('rush.urls')),
     path('', include('base.urls')),
     # path('users/', include('users.urls')),
     path('accounts/login/', auth_views.LoginView.as_view(redirect_authenticated_user=True), name='login'),
