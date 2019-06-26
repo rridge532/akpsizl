@@ -11,7 +11,7 @@ import qrcode
 
 from users.models import Profile, brother_check, exec_check
 from .models import RushNight, RusheeSignin, Interview, Application, Mention, Vote
-from .forms import ChangeNightForm
+from .forms import ChangeNightForm, InterviewForm
 
 # if cache.get('night') is None:
 #     cache.set('night', 0, None)
@@ -54,18 +54,29 @@ def interview(request):
     night = get_night()
     if night:
     # night = get_object_or_404(RushNight, pk=night)
-        if night.enableinterviews: 
+        if night.interviews: 
             if request.method == 'POST':
-                form = InterviewForm(request.POST)
+                interview = Interview(interviewer=request.user)
+                form = InterviewForm(request.POST, instance=interview)
                 if form.is_valid():
-                    return HttpResponse('interview submitted')
+                    form.save()
+                    message = "Thanks for interviewing %(form.rushee.name)s."
             else:
                 form = InterviewForm()
-            return render(request, 'rush/interview.html', {'form': form})
+            context = {
+                'form': form,
+                'containersize': 'medium',
+            }
+            return render(request, 'rush/interview.html', context)
         else:
-            return HttpResponse('interviews not allowed')
+            message = "Interviews are not allowed for this night of Rush."
+            # return HttpResponse('interviews not allowed')
     else:
-        return HttpResponse('no night set')
+        message = "Tonight is not a night of Rush. Please come back later."
+    context = {
+        'message': message
+    }
+    return render(request, 'base/error.html', context=context)
 """
 @login_required
 @user_passes_test(exec_check, redirect_field_name=None)

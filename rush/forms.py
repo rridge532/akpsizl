@@ -7,5 +7,15 @@ class ChangeNightForm(forms.Form):
         RushNight.objects.all(),
         to_field_name=None, 
         label='',
-        help_text='Only change this right before the event begins.')
+        help_text='Only change this right before the event begins.',
+        empty_label='None',
+        required=False
+    )
     
+class InterviewForm(forms.ModelForm):
+    class Meta:
+        model = Interview
+        exclude = ['interviewer']
+        widgets = {
+            'comment': forms.Textarea(attrs={'cols': 80, 'rows': 3}),
+        }

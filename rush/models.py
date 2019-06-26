@@ -23,13 +23,13 @@ gpas = (
     (9, "Above 3.75"),
 )
 
-scores = {
-    (1, '1'),
-    (2, '2'),
-    (3, '3'),
-    (4, '4'),
-    (5, '5'),
-}
+scores = [
+    (1, 'Bad'),
+    (2, 'Poor'),
+    (3, 'Okay'),
+    (4, 'Good'),
+    (5, 'Great'),
+]
 
 essaytopicchoices = (
     (1, "What is something you are passionate about?"),
@@ -59,8 +59,8 @@ class RushNight(models.Model):
     night = models.IntegerField(default=1, unique=True, blank=False, validators=[validate_not_negative])
     name = models.CharField(max_length=50)
     date = models.DateField()
-    interviews = models.BooleanField(default=0)
-    voting = models.BooleanField(default=0)
+    interviews = models.BooleanField(default=False)
+    voting = models.BooleanField(default=False)
     comment = models.CharField(max_length=120, blank=True)
 
     def __str__(self):
@@ -77,8 +77,8 @@ class RusheeSignin(models.Model):
         unique_together = ('rushee', 'night')
 
 class Interview(models.Model):
-    rushee = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'profile.isbrother': False}, related_name='interviewgiven')
-    interviewer = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'profile.isbrother': True})
+    rushee = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'profile__isbrother': False}, related_name='interviewgiven')
+    interviewer = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'profile__isbrother': True})
     interest = models.IntegerField(choices=scores)
     energy = models.IntegerField(choices=scores)
     friendliness = models.IntegerField(choices=scores)

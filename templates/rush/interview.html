@@ -1,0 +1,20 @@
+{% extends 'base/base_generic.html' %}
+
+{% block banner %} {% endblock %}
+
+{% block main_headertext %}
+<h2>Interview</h2>
+<h4>If you have already interviewed this Rushee, this will overwrite the last interview.</h4>
+{% endblock %}
+
+{% block content %}
+<form action="{% url 'rush:interview' %}" method="post">
+    {% csrf_token %}
+    {% for field in form %}
+        <h4>{{ field.label }}</h4>
+        <p>{{ field }}</p>
+        <br />
+    {% endfor %}
+    <input type="submit" value="Submit" />
+</form>
+{% endblock %}
