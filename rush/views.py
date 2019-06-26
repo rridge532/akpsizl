@@ -10,11 +10,19 @@ import statistics
 import qrcode
 
 from users.models import Profile, brother_check, exec_check
-from .models import RushNight, RusheeAttendance, Interview, Application, Mention, Vote
+from .models import RushNight, RusheeSignin, Interview, Application, Mention, Vote
 from .forms import ChangeNightForm
 
-if cache.get('night') is None:
-    cache.set('night', 0, None)
+# if cache.get('night') is None:
+#     cache.set('night', 0, None)
+
+def get_night():
+    night = cache.get('night')
+    try:
+        night= get_object_or_404(RushNight, id=night.id)
+    except:
+        night = None
+    return night
 
 def qrcodeimage(request, eventid):
     night = get_object_or_404(RushNight, id=night)
@@ -33,7 +41,7 @@ def changenight(request):
         if form.is_valid():
             night = form.cleaned_data['rushnight']
             cache.set('night', night, None)
-            newnight = cache.get('night')
+            newnight = get_night()
             return HttpResponse(str(newnight))
             # return HttpResponseRedirect('/thanks/')
     else:
@@ -43,12 +51,21 @@ def changenight(request):
 @login_required
 @user_passes_test(brother_check, redirect_field_name=None)
 def interview(request):
-    night = cache.get('night')
+    night = get_night()
+    if night:
     # night = get_object_or_404(RushNight, pk=night)
-    if night.enableinterviews:
-        return HttpResponse('success')
+        if night.enableinterviews: 
+            if request.method == 'POST':
+                form = InterviewForm(request.POST)
+                if form.is_valid():
+                    return HttpResponse('interview submitted')
+            else:
+                form = InterviewForm()
+            return render(request, 'rush/interview.html', {'form': form})
+        else:
+            return HttpResponse('interviews not allowed')
     else:
-        return HttpResponse('failure')
+        return HttpResponse('no night set')
 """
 @login_required
 @user_passes_test(exec_check, redirect_field_name=None)

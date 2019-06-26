@@ -20,7 +20,7 @@ from django.contrib.auth import views as auth_views
 from base import views as base_views
 
 urlpatterns = [
-    path('exec/', admin.site.urls),
+    path('exec/', admin.site.urls, name='exec'),
     path('attendance/', include('attendance.urls')),
     path('rush/', include('rush.urls')),
     path('', include('base.urls')),

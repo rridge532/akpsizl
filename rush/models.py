@@ -59,14 +59,14 @@ class RushNight(models.Model):
     night = models.IntegerField(default=1, unique=True, blank=False, validators=[validate_not_negative])
     name = models.CharField(max_length=50)
     date = models.DateField()
-    enableinterviews = models.BooleanField(default=0)
-    enablevoting = models.BooleanField(default=0)
+    interviews = models.BooleanField(default=0)
+    voting = models.BooleanField(default=0)
     comment = models.CharField(max_length=120, blank=True)
 
     def __str__(self):
         return str(self.night) + ': ' + self.name
 
-class RusheeAttendance(models.Model):
+class RusheeSignin(models.Model):
     rushee = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'profile.isbrother': False})
     night = models.ForeignKey(RushNight, on_delete=models.CASCADE)
 

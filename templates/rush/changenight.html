@@ -3,13 +3,19 @@
 {% block banner %} {% endblock %}
 
 {% block main_headertext %}
-Change Rush Night
+    <h2>Change Rush Night</h2>
+    <h4>This affects mentions, rushee signin, and the ability to vote or give interviews.</h4>
 {% endblock %}
 
 {% block content %}
     <form action="{% url 'rush:changenight' %}" method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <input type="submit" value="Change" />
+        <div class="col-12">
+            <ul class="actions special">
+                <li><input type="submit" value="Change" /></li>
+                <li><a href="{% url 'admin:index' %}" class="button alt">Add Night</a></li>
+            </ul>
+        </div>
     </form>
 {% endblock %}
