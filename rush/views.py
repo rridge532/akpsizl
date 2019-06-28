@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
 from datetime import datetime
-from django.utils import timezone
+from django.utils import timezone, http
 from django.core.cache import cache
 import statistics
 import qrcode
@@ -56,11 +56,34 @@ def interview(request):
     # night = get_object_or_404(RushNight, pk=night)
         if night.interviews: 
             if request.method == 'POST':
-                interview = Interview(interviewer=request.user)
-                form = InterviewForm(request.POST, instance=interview)
+                form = InterviewForm(request.POST)
+                # try:
+                #     interview = Interview.objects.get(interviewer=request.user, rushee=form.cleaned_date['rushee'])
+                # except:
+                #     interview = Interview(interviewer=request.user)
+                # form = InterviewForm(request.POST, instance=interview)
                 if form.is_valid():
-                    form.save()
-                    message = "Thanks for interviewing %(form.rushee.name)s."
+                    newinterview = form.save(commit=False)
+                    oldinterview = Interview.objects.get(interviewer=request.user, rushee=newinterview.rushee)
+                    if oldinterview:
+                        form = InterviewForm(request.POST, instance=oldinterview)
+                        newinterview = form.save(commit=False)
+                    newinterview.interviewer = request.user
+                    newinterview.save
+                    message = "Your interview with %s has been recorded." % (form.cleaned_data['rushee'])
+                    newinterview = ('New Interview', '/rush/interview')
+                    home = ('Home', '/')
+                    buttons = (newinterview, )
+                    altbuttons = (home, )
+                    context = {
+                        'message': message,
+                        # 'ref': url,
+                        'buttons': buttons,
+                        'altbuttons': altbuttons,
+                        # 'button_text': button_text,
+                        # 'button_url': button_url,
+                    }
+                    return render(request, 'rush/thanks.html', context)
             else:
                 form = InterviewForm()
             context = {
@@ -74,7 +97,7 @@ def interview(request):
     else:
         message = "Tonight is not a night of Rush. Please come back later."
     context = {
-        'message': message
+        'message': message,
     }
     return render(request, 'base/error.html', context=context)
 """

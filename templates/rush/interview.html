@@ -10,11 +10,19 @@
 {% block content %}
 <form action="{% url 'rush:interview' %}" method="post">
     {% csrf_token %}
-    {% for field in form %}
-        <h4>{{ field.label }}</h4>
-        <p>{{ field }}</p>
-        <br />
-    {% endfor %}
-    <input type="submit" value="Submit" />
+    <div class="row gtr-50 gtr-uniform">
+        {% for field in form %}
+        <div class="col-12">
+            <h4>{{ field.label }}</h4>
+            <p>{{ field }}</p>
+        </div>
+        {% endfor %}
+        <div class="col-12">
+            <ul class="actions special">
+                <li><input type="submit" value="Submit" /></li>
+                <li><input class="button alt" type="reset" value="Clear"/></li>
+            </ul>
+        </div>    
+    </div>
 </form>
 {% endblock %}
