@@ -24,11 +24,11 @@ gpas = (
 )
 
 scores = [
-    (1, 'Bad'),
-    (2, 'Poor'),
-    (3, 'Okay'),
-    (4, 'Good'),
-    (5, 'Great'),
+    (1, 'Bad (1)'),
+    (2, 'Poor (2)'),
+    (3, 'Okay (3)'),
+    (4, 'Good (4)'),
+    (5, 'Great (5)'),
 ]
 
 essaytopicchoices = (
