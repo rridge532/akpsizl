@@ -13,8 +13,9 @@ from users.models import Profile, brother_check, exec_check
 from .models import RushNight, RusheeSignin, Interview, Application, Mention, Vote
 from .forms import ChangeNightForm, InterviewForm
 
-# if cache.get('night') is None:
-#     cache.set('night', 0, None)
+# REMOVE THIS, THIS IS JUST FOR TESTING TO CONSISTENTLY SET NIGHT
+if cache.get('night') is None:
+    cache.set('night', RushNight.objects.first(), None)
 
 def get_night():
     night = cache.get('night')
@@ -42,11 +43,50 @@ def changenight(request):
             night = form.cleaned_data['rushnight']
             cache.set('night', night, None)
             newnight = get_night()
-            return HttpResponse(str(newnight))
-            # return HttpResponseRedirect('/thanks/')
+            message = "You have successfully changed the night to %s." % newnight
+            home = ('Home', '/')
+            altbuttons = (home, )
+            context = {
+                'person': request.user,
+                'message': message,
+                'altbuttons': altbuttons,
+            }
+            return render(request, 'rush/thanks.html', context)
     else:
-        form = ChangeNightForm()
+        form = ChangeNightForm(initial = {'rushnight': RushNight.objects.filter(date=datetime.today()).first()})
     return render(request, 'rush/changenight.html', {'form': form})
+
+@login_required
+@user_passes_test(brother_check, redirect_field_name=None)
+def rusheesignin(request):
+    night = get_night()
+    if night and not night.voting:
+        if request.method == 'POST':
+            form = ReturnRushee(request.POST)
+            if form.is_valid:
+                rusheeattendance = form.save(commit=False)
+        else:
+            form = ReturnRushee()
+        context = {
+            'form': form,
+            'containersize': 'medium',
+        }
+        return render(request, 'rush/rusheesignin')
+    else:
+        message = "We are not currently accepting any new rush applications."
+    context = {
+        'message': message,
+    }
+    return render(request, 'base/error.html', context=context)
+
+@login_required
+@user_passes_test(brother_check, redirect_field_name=None)
+def rusheesignup(request):
+    if request.method == 'POST':
+        form = RusheeSignupForm(request.POST)
+        if form.is_valid():
+            return HttpResponse('success')
+    return HttpResponseRedirect(reverse(rusheesignin))
 
 @login_required
 @user_passes_test(brother_check, redirect_field_name=None)
@@ -66,9 +106,9 @@ def interview(request):
                     newinterview.interviewer = request.user
                     newinterview.save
                     message = "Your interview with %s has been recorded." % (form.cleaned_data['rushee'])
-                    newinterview = ('New Interview', '/rush/interview')
+                    interview = ('New Interview', '/rush/interview')
                     home = ('Home', '/')
-                    buttons = (newinterview, )
+                    buttons = (interview, )
                     altbuttons = (home, )
                     context = {
                         'person': request.user,
