@@ -57,11 +57,6 @@ def interview(request):
         if night.interviews: 
             if request.method == 'POST':
                 form = InterviewForm(request.POST)
-                # try:
-                #     interview = Interview.objects.get(interviewer=request.user, rushee=form.cleaned_date['rushee'])
-                # except:
-                #     interview = Interview(interviewer=request.user)
-                # form = InterviewForm(request.POST, instance=interview)
                 if form.is_valid():
                     newinterview = form.save(commit=False)
                     oldinterview = Interview.objects.get(interviewer=request.user, rushee=newinterview.rushee)
@@ -76,10 +71,10 @@ def interview(request):
                     buttons = (newinterview, )
                     altbuttons = (home, )
                     context = {
+                        'person': request.user,
                         'message': message,
                         'buttons': buttons,
                         'altbuttons': altbuttons,
-                        'person': request.user,
                     }
                     return render(request, 'rush/thanks.html', context)
             else:
@@ -91,7 +86,6 @@ def interview(request):
             return render(request, 'rush/interview.html', context)
         else:
             message = "Interviews are not allowed for this night of Rush."
-            # return HttpResponse('interviews not allowed')
     else:
         message = "Tonight is not a night of Rush. Please come back later."
     context = {
