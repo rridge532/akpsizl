@@ -77,11 +77,9 @@ def interview(request):
                     altbuttons = (home, )
                     context = {
                         'message': message,
-                        # 'ref': url,
                         'buttons': buttons,
                         'altbuttons': altbuttons,
-                        # 'button_text': button_text,
-                        # 'button_url': button_url,
+                        'person': request.user,
                     }
                     return render(request, 'rush/thanks.html', context)
             else:
