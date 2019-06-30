@@ -2,36 +2,78 @@
 
 {% block banner %} {% endblock %}
 
-{% block main_headertext %}
-<h2>Rushee Signin</h2>
-<h4>If this is your first night, please use the link below to sign up.</h4>
-{% endblock %}
-
-{% block content %}
-
-    {% if form.non_field_errors %}
-        <ul class='errorlist' style="list-style: none;">
-            {% for error in form.non_field_errors %}
-                <li>{{ error }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
-    <form action="{% url 'rush:rusheesignin' %}" method="post">
-        {% csrf_token %}
-        <div class="row gtr-50 gtr-uniform">
-            {% for field in form %}
-            <div class="col-12">
-                <h4>{{ field.label }}</h4>
-                <p>{{ field }}</p>
+{% block main %}
+    <section id="main" class="container">
+        <header>
+            <h2>Rushee Signin for {{ night.name }} </h2>
+            <h4>If this is your first night, please sign up.</h4>
+        </header>
+        <div class="row">
+            <div class="col-6 col-12-narrower">
+                <section class="box special">
+                    {% if signinform.non_field_errors %}
+                        <ul class='errorlist' style="list-style: none;">
+                            {% for error in signinform.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+        
+                    <form action="{% url 'rush:rusheesignin' %}" method="post">
+                        {% csrf_token %}
+                        <div class="row gtr-50 gtr-uniform">
+                            {% for field in signinform %}
+                            <div class="col-12">
+                                <h4>{{ field.label }}</h4>
+                                <p>{{ field }}</p>
+                            </div>
+                            {% endfor %}
+                            <div class="col-12">
+                                <ul class="actions special">
+                                    <li><input type="submit" value="Submit" /></li>
+                                    <li><input class="button alt" type="reset" value="Clear"/></li>
+                                </ul>
+                            </div>    
+                        </div>
+                    </form>
+                </section>
             </div>
-            {% endfor %}
-            <div class="col-12">
-                <ul class="actions special">
-                    <li><input type="submit" value="Submit" /></li>
-                    <li><input class="button alt" type="reset" value="Clear"/></li>
-                </ul>
-            </div>    
-        </div>
-    </form>
+            <div class="col-6 col-12-narrower">
+                <section class="box special">
+                    {% if signupform.errors %}
+                        {% for field in signupform %}
+                            {% for error in field.errors %}
+                                <div class="error">
+                                    <strong>{{ error|escape }}</strong>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in signupform.non_field_errors %}
+                            <div class="alert alert-danger">
+                                <strong>{{ error|escape }}</strong>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+        
+                    <form action="{% url 'rush:rusheesignup' %}" method="post">
+                        {% csrf_token %}
+                        <div class="row gtr-50 gtr-uniform">
+                            {% for field in signupform %}
+                            <div class="col-12">
+                                <h4>{{ field.label }}</h4>
+                                <p>{{ field }}</p>
+                            </div>
+                            {% endfor %}
+                            <div class="col-12">
+                                <ul class="actions special">
+                                    <li><input type="submit" value="Submit" /></li>
+                                    <li><input class="button alt" type="reset" value="Clear"/></li>
+                                </ul>
+                            </div>    
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </div>        
+    </section>
 {% endblock %}

@@ -23,13 +23,14 @@ class InterviewForm(forms.ModelForm):
         }
 
 class RusheeSignupForm(UserCreationForm):
-    first_name = forms.CharField(max_length=30)
-    last_name = forms.CharField(max_length=30)
+    username = forms.CharField(max_length=255, label='NetID')
+    first_name = forms.CharField(max_length=50)
+    last_name = forms.CharField(max_length=50)
     email = forms.EmailField(max_length=254)
-
+    
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'password1', 'password2', )
+        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', )
 
 class RusheeSigninForm(forms.Form):
     username = forms.CharField(label='NetID', max_length=255, required=True)

@@ -11,7 +11,7 @@ import qrcode
 
 from users.models import Profile, brother_check, exec_check
 from .models import RushNight, RusheeSignin, Interview, Application, Mention, Vote
-from .forms import ChangeNightForm, InterviewForm, RusheeSigninForm
+from .forms import ChangeNightForm, InterviewForm, RusheeSigninForm, RusheeSignupForm
 
 # REMOVE THIS, THIS IS JUST FOR TESTING TO CONSISTENTLY SET NIGHT
 if cache.get('night') is None:
@@ -67,9 +67,10 @@ def rusheesignin(request):
     night = get_night()
     if night:
         if not night.voting:
-            form = RusheeSigninForm(request.POST or None)
-            if request.POST and form.is_valid():
-                rushee = form.login(request)
+            signinform = RusheeSigninForm(request.POST or None)
+            signupform = RusheeSignupForm(request.POST or None)
+            if request.POST and signinform.is_valid():
+                rushee = signinform.login(request)
                 if rushee:
                     signin, created = RusheeSignin.objects.get_or_create(rushee=rushee, night=night)
                     if created:
@@ -86,7 +87,9 @@ def rusheesignin(request):
                     request.session['context'] = context
                     return redirect('rush:thanks')
             context = {
-                'form': form,
+                'signinform': signinform,
+                'signupform': signupform,
+                'night': night,
                 # 'containersize': 'medium',
             }
             return render(request, 'rush/rusheesignin.html', context)
@@ -100,14 +103,19 @@ def rusheesignin(request):
 @user_passes_test(brother_check, redirect_field_name=None)
 def rusheesignup(request):
     night = get_night()
-    if night and not night.voting:
-        if request.method == 'POST':
+    if night:
+        if not night.voting:
             form = RusheeSignupForm(request.POST)
-            if form.is_valid():
+            if request.method == 'POST' and form.is_valid():
                 form.save()
-            
                 return HttpResponse('success')
-    return HttpResponseRedirect(reverse(rusheesignin))
+            context = {
+                'signinform': RusheeSigninForm,
+                'signupform': form,
+                'night': night,
+            }
+            return render(request, 'rush/rusheesignin.html', context)
+    return HttpResponseRedirect(reverse('rush:rusheesignin'))
 
 @login_required
 @user_passes_test(brother_check, redirect_field_name=None)
