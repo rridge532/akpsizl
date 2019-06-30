@@ -1,4 +1,4 @@
-from django.shortcuts import render, HttpResponse, HttpResponseRedirect, get_object_or_404
+from django.shortcuts import render, redirect, HttpResponse, HttpResponseRedirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
@@ -11,7 +11,7 @@ import qrcode
 
 from users.models import Profile, brother_check, exec_check
 from .models import RushNight, RusheeSignin, Interview, Application, Mention, Vote
-from .forms import ChangeNightForm, InterviewForm
+from .forms import ChangeNightForm, InterviewForm, RusheeSigninForm
 
 # REMOVE THIS, THIS IS JUST FOR TESTING TO CONSISTENTLY SET NIGHT
 if cache.get('night') is None:
@@ -25,15 +25,19 @@ def get_night():
         night = None
     return night
 
-def qrcodeimage(request, eventid):
-    night = get_object_or_404(RushNight, id=night)
-    address = 'https://akpsirush.com/rush/{}/rusheesignin'.format(event.id)
+def qrcodeimage(request, nightid):
+    night = get_object_or_404(RushNight, id=nightid)
+    address = 'https://akpsirush.com/rush/{}/rusheesignin'.format(night.id)
     img = qrcode.make(address)
     response = HttpResponse(content_type="image/png")
     img.save(response, "PNG")
     return response
 
 # Create your views here.
+
+def thanks(request):
+    return render(request, 'rush/thanks.html',  context=request.session['context'])
+
 @login_required
 @user_passes_test(exec_check, redirect_field_name=None)
 def changenight(request):
@@ -60,20 +64,40 @@ def changenight(request):
 @user_passes_test(brother_check, redirect_field_name=None)
 def rusheesignin(request):
     night = get_night()
-    if night and not night.voting:
-        if request.method == 'POST':
-            form = ReturnRushee(request.POST)
-            if form.is_valid:
-                rusheeattendance = form.save(commit=False)
-        else:
-            form = ReturnRushee()
-        context = {
-            'form': form,
-            'containersize': 'medium',
-        }
-        return render(request, 'rush/rusheesignin')
-    else:
-        message = "We are not currently accepting any new rush applications."
+    if night:
+        if not night.voting:
+            if request.method == 'POST':
+                form = RusheeSigninForm(request.POST)
+                if form.is_valid():
+                    username = form.cleaned_data['username']
+                    password = form.cleaned_data['password']
+                    rushee = authenticate(username=username, password=password)
+                    if rushee:
+                        signin, created = RusheeSignin.objects.get_or_create(rushee=rushee, night=night)
+                        if created:
+                            signin.save()
+                        message = "Your signin for %s has been recorded." % night
+                        signin = ('New Signin', '/rush/signin')
+                        home = ('Home', '/')
+                        buttons = (signin, )
+                        altbuttons = (home, )
+                        context = {
+                            'person': rushee.first_name,
+                            'message': message,
+                            'buttons': buttons,
+                            'altbuttons': altbuttons,
+                        }
+                        request.session['context'] = context
+                        return render(request, 'rush/thanks.html', context)
+                    # error = 
+            else:
+                form = RusheeSigninForm()
+            context = {
+                'form': form,
+                'containersize': 'medium',
+            }
+            return render(request, 'rush/rusheesignin.html', context)
+    message = "We are not currently accepting any new rush applications."
     context = {
         'message': message,
     }
@@ -82,10 +106,14 @@ def rusheesignin(request):
 @login_required
 @user_passes_test(brother_check, redirect_field_name=None)
 def rusheesignup(request):
-    if request.method == 'POST':
-        form = RusheeSignupForm(request.POST)
-        if form.is_valid():
-            return HttpResponse('success')
+    night = get_night()
+    if night and not night.voting:
+        if request.method == 'POST':
+            form = RusheeSignupForm(request.POST)
+            if form.is_valid():
+                form.save()
+            
+                return HttpResponse('success')
     return HttpResponseRedirect(reverse(rusheesignin))
 
 @login_required
