@@ -42,21 +42,21 @@ def thanks(request):
 @login_required
 @user_passes_test(exec_check, redirect_field_name=None)
 def changenight(request):
-    form = ChangeNightForm(request.POST or None, initial = {'rushnight': RushNight.objects.filter(date=datetime.today()).first()})
+    form = ChangeNightForm(request.POST or None,
+                           initial = {'rushnight': RushNight.objects.filter(date=datetime.today()).first()})
     if request.POST and form.is_valid():
         night = form.cleaned_data['rushnight']
         cache.set('night', night, None)
         newnight = get_night()
         message = "You have successfully changed the night to %s." % newnight
-        home = ('Home', '/')
-        altbuttons = (home, )
+        buttons = (('Home', '/'), )
         context = {
             'person': request.user.first_name,
             'message': message,
-            'altbuttons': altbuttons,
+            'buttons': buttons,
         }
         request.session['context'] = context
-        return render(request, 'rush/thanks.html', context)
+        return redirect('rush:thanks')
     else:
         form = ChangeNightForm(initial = {'rushnight': RushNight.objects.filter(date=datetime.today()).first()})
     return render(request, 'rush/changenight.html', {'form': form})
@@ -75,10 +75,8 @@ def rusheesignin(request):
                     if created:
                         signin.save()
                     message = "Your signin for %s has been recorded." % night
-                    signin = ('New Signin', '/rush/signin')
-                    home = ('Home', '/')
-                    buttons = (signin, )
-                    altbuttons = (home, )
+                    buttons = (('New Signin', '/rush/signin'), )
+                    altbuttons = (('Home', '/'), )
                     context = {
                         'person': rushee.first_name,
                         'message': message,
@@ -86,7 +84,7 @@ def rusheesignin(request):
                         'altbuttons': altbuttons,
                     }
                     request.session['context'] = context
-                    return redirect('rush:thanks', permanent=False)
+                    return redirect('rush:thanks')
             context = {
                 'form': form,
                 # 'containersize': 'medium',
