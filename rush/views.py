@@ -51,10 +51,11 @@ def changenight(request):
         home = ('Home', '/')
         altbuttons = (home, )
         context = {
-            'person': request.user,
+            'person': request.user.first_name,
             'message': message,
             'altbuttons': altbuttons,
         }
+        request.session['context'] = context
         return render(request, 'rush/thanks.html', context)
     else:
         form = ChangeNightForm(initial = {'rushnight': RushNight.objects.filter(date=datetime.today()).first()})
@@ -85,7 +86,7 @@ def rusheesignin(request):
                         'altbuttons': altbuttons,
                     }
                     request.session['context'] = context
-                    return HttpResponseRedirect(reverse('rush:thanks'))
+                    return redirect('rush:thanks', permanent=False)
             context = {
                 'form': form,
                 # 'containersize': 'medium',
