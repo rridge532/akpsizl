@@ -36,26 +36,26 @@ def qrcodeimage(request, nightid):
 # Create your views here.
 
 def thanks(request):
-    return render(request, 'rush/thanks.html',  context=request.session['context'])
+    context = request.session['context']
+    return render(request, 'rush/thanks.html', context)
 
 @login_required
 @user_passes_test(exec_check, redirect_field_name=None)
 def changenight(request):
-    if request.method == 'POST':
-        form = ChangeNightForm(request.POST)
-        if form.is_valid():
-            night = form.cleaned_data['rushnight']
-            cache.set('night', night, None)
-            newnight = get_night()
-            message = "You have successfully changed the night to %s." % newnight
-            home = ('Home', '/')
-            altbuttons = (home, )
-            context = {
-                'person': request.user,
-                'message': message,
-                'altbuttons': altbuttons,
-            }
-            return render(request, 'rush/thanks.html', context)
+    form = ChangeNightForm(request.POST or None, initial = {'rushnight': RushNight.objects.filter(date=datetime.today()).first()})
+    if request.POST and form.is_valid():
+        night = form.cleaned_data['rushnight']
+        cache.set('night', night, None)
+        newnight = get_night()
+        message = "You have successfully changed the night to %s." % newnight
+        home = ('Home', '/')
+        altbuttons = (home, )
+        context = {
+            'person': request.user,
+            'message': message,
+            'altbuttons': altbuttons,
+        }
+        return render(request, 'rush/thanks.html', context)
     else:
         form = ChangeNightForm(initial = {'rushnight': RushNight.objects.filter(date=datetime.today()).first()})
     return render(request, 'rush/changenight.html', {'form': form})
@@ -66,35 +66,29 @@ def rusheesignin(request):
     night = get_night()
     if night:
         if not night.voting:
-            if request.method == 'POST':
-                form = RusheeSigninForm(request.POST)
-                if form.is_valid():
-                    username = form.cleaned_data['username']
-                    password = form.cleaned_data['password']
-                    rushee = authenticate(username=username, password=password)
-                    if rushee:
-                        signin, created = RusheeSignin.objects.get_or_create(rushee=rushee, night=night)
-                        if created:
-                            signin.save()
-                        message = "Your signin for %s has been recorded." % night
-                        signin = ('New Signin', '/rush/signin')
-                        home = ('Home', '/')
-                        buttons = (signin, )
-                        altbuttons = (home, )
-                        context = {
-                            'person': rushee.first_name,
-                            'message': message,
-                            'buttons': buttons,
-                            'altbuttons': altbuttons,
-                        }
-                        request.session['context'] = context
-                        return render(request, 'rush/thanks.html', context)
-                    # error = 
-            else:
-                form = RusheeSigninForm()
+            form = RusheeSigninForm(request.POST or None)
+            if request.POST and form.is_valid():
+                rushee = form.login(request)
+                if rushee:
+                    signin, created = RusheeSignin.objects.get_or_create(rushee=rushee, night=night)
+                    if created:
+                        signin.save()
+                    message = "Your signin for %s has been recorded." % night
+                    signin = ('New Signin', '/rush/signin')
+                    home = ('Home', '/')
+                    buttons = (signin, )
+                    altbuttons = (home, )
+                    context = {
+                        'person': rushee.first_name,
+                        'message': message,
+                        'buttons': buttons,
+                        'altbuttons': altbuttons,
+                    }
+                    request.session['context'] = context
+                    return HttpResponseRedirect(reverse('rush:thanks'))
             context = {
                 'form': form,
-                'containersize': 'medium',
+                # 'containersize': 'medium',
             }
             return render(request, 'rush/rusheesignin.html', context)
     message = "We are not currently accepting any new rush applications."
