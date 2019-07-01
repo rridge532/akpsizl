@@ -67,7 +67,7 @@ class RushNight(models.Model):
         return str(self.night) + ': ' + self.name
 
 class RusheeSignin(models.Model):
-    rushee = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'profile.isbrother': False})
+    rushee = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'profile__isbrother': False})
     night = models.ForeignKey(RushNight, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -91,7 +91,9 @@ class Interview(models.Model):
         unique_together = ('interviewer', 'rushee')
 
 class Application(models.Model):
-    rushee = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'profile.isbrother': False})
+    rushee = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'profile__isbrother': False})
+    address = models.CharField(max_length=200, verbose_name="School Address (Used for bid delivery)")
+    cellphone = models.CharField(max_length=30, verbose_name="Cell Phone Number (Used for bid delivery)")
     FRESHMAN = 'FR'
     SOPHOMORE = 'SO'
     JUNIOR = 'JR'
@@ -106,24 +108,24 @@ class Application(models.Model):
         max_length=2,
         choices=YEAR_IN_SCHOOL_CHOICES,
         default=FRESHMAN,
+        verbose_name="Year*"
     )
-    address = models.CharField(max_length=200, verbose_name="School Address")
-    cellphone = models.CharField(max_length=30, verbose_name="Cell Phone Number")
-    gpa = models.IntegerField(choices=gpas, verbose_name="College GPA*", default=1)
-    involvement = models.CharField(max_length=300, verbose_name="What are you involved with on campus?*", null=True, blank=True)
-    WhyAKPsi = models.CharField(max_length=500, verbose_name="Why do you want to be part of AKPsi?*", null=True)
-    HowDidYouHear = models.CharField(max_length=200, verbose_name="How did you hear about AKPsi?", null=True, blank=True)
-    excuses = models.CharField(max_length=200, verbose_name="Do you have any conflicts with any nights of rush? If so what are they? If not leave blank*", null=True, blank=True)
-    aboutme = models.CharField(max_length=400, verbose_name='Please use the space below to write an \'About Me\'*', null=True, blank=True)
-    essaytopic = models.IntegerField(choices=essaytopicchoices, null=True, verbose_name="Choose an Essay Topic Below!", blank=True)
-    essay = models.CharField(max_length=3500, verbose_name="Use The Space Below to Write a Short (less than 500 words) Essay About Your Selected Topic!*", null=True, blank=True)
+    major = models.CharField(max_length=50, verbose_name="Major*", blank=True)
+    gpa = models.IntegerField(choices=gpas, verbose_name="College GPA*")
+    involvement = models.CharField(max_length=300, verbose_name="What are you involved with on campus?*", blank=True)
+    WhyAKPsi = models.CharField(max_length=500, verbose_name="Why do you want to be part of AKPsi?*", blank=True)
+    HowDidYouHear = models.CharField(max_length=200, verbose_name="How did you hear about AKPsi?*", blank=True)
+    excuses = models.CharField(max_length=200, verbose_name="Any conflicts with any nights of rush? If so, what are they? If not, leave blank*", blank=True)
+    aboutme = models.CharField(max_length=400, verbose_name='Please use the space below to write an \'About Me\'*', blank=True)
+    essaytopic = models.IntegerField(choices=essaytopicchoices, verbose_name="Essay Topic*", blank=True)
+    essay = models.CharField(max_length=3500, verbose_name="Write a Short (less than 500 words) Essay About Your Selected Topic!*", blank=True)
 
     def __str__(self):
         return "Application of " + str(self.rushee)
 
 class Mention(models.Model):
-    brother = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'profile.isbrother': True}, related_name='mentiongiven')
-    rushee = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'profile.isbrother': False})
+    brother = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'profile__isbrother': True}, related_name='mentiongiven')
+    rushee = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'profile__isbrother': False})
     night = models.ForeignKey(RushNight, on_delete=models.CASCADE)
     mentiontype = models.IntegerField(choices=typesofmentions, verbose_name="Type of Mention", blank=False, default=1)
     comment = models.CharField(max_length=200, verbose_name="Comment", null=True)
@@ -139,8 +141,8 @@ class Mention(models.Model):
                + " mention of " + self.rushee.get_full_name()
 
 class Vote(models.Model):
-    brother = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'profile.isbrother': True}, related_name='+')
-    rushee = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'profile.isbrother': False})
+    brother = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'profile__isbrother': True}, related_name='+')
+    rushee = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'profile__isbrother': False})
     choice = models.IntegerField(choices=votechoices, default=3)
 
     class Meta:
