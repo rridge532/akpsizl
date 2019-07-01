@@ -6,7 +6,7 @@ from django.dispatch import receiver
 # Create your models here.
 
 def brother_check(user):
-    return user.profile.issenior
+    return user.profile.isbrother or user.profile.isexec or user.profile.isloa
 
 def exec_check(user):
     return user.profile.isexec
