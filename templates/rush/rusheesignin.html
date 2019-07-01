@@ -5,18 +5,26 @@
 {% block main %}
     <section id="main" class="container">
         <header>
-            <h2>Rushee Signin for {{ night.name }} </h2>
+            <h2>Rushee Signin for {{ night.name|title }} </h2>
             <h4>If this is your first night, please sign up.</h4>
         </header>
         <div class="row">
             <div class="col-6 col-12-narrower">
                 <section class="box special">
-                    {% if signinform.non_field_errors %}
-                        <ul class='errorlist' style="list-style: none;">
-                            {% for error in signinform.non_field_errors %}
-                                <li>{{ error }}</li>
+                    <h3>Returning Rushee</h3>
+                    {% if signinform.errors %}
+                        {% for field in signinform %}
+                            {% for error in field.errors %}
+                                <div class="error">
+                                    <strong>{{ error|escape }}</strong>
+                                </div>
                             {% endfor %}
-                        </ul>
+                        {% endfor %}
+                        {% for error in signinform.non_field_errors %}
+                            <div class="error">
+                                <strong>{{ error|escape }}</strong>
+                            </div>
+                        {% endfor %}
                     {% endif %}
         
                     <form action="{% url 'rush:rusheesignin' %}" method="post">
@@ -24,14 +32,13 @@
                         <div class="row gtr-50 gtr-uniform">
                             {% for field in signinform %}
                             <div class="col-12">
-                                <h4>{{ field.label }}</h4>
                                 <p>{{ field }}</p>
                             </div>
                             {% endfor %}
                             <div class="col-12">
                                 <ul class="actions special">
                                     <li><input type="submit" value="Submit" /></li>
-                                    <li><input class="button alt" type="reset" value="Clear"/></li>
+                                    <li><a href="{{ url }}" class="button alt">Clear</a></li>
                                 </ul>
                             </div>    
                         </div>
@@ -40,6 +47,7 @@
             </div>
             <div class="col-6 col-12-narrower">
                 <section class="box special">
+                    <h3>New Rushee</h3>
                     {% if signupform.errors %}
                         {% for field in signupform %}
                             {% for error in field.errors %}
@@ -49,7 +57,7 @@
                             {% endfor %}
                         {% endfor %}
                         {% for error in signupform.non_field_errors %}
-                            <div class="alert alert-danger">
+                            <div class="error">
                                 <strong>{{ error|escape }}</strong>
                             </div>
                         {% endfor %}
@@ -60,14 +68,13 @@
                         <div class="row gtr-50 gtr-uniform">
                             {% for field in signupform %}
                             <div class="col-12">
-                                <h4>{{ field.label }}</h4>
                                 <p>{{ field }}</p>
                             </div>
                             {% endfor %}
                             <div class="col-12">
                                 <ul class="actions special">
                                     <li><input type="submit" value="Submit" /></li>
-                                    <li><input class="button alt" type="reset" value="Clear"/></li>
+                                    <li><a href="{{ url }}" class="button alt">Clear</a></li>
                                 </ul>
                             </div>    
                         </div>
