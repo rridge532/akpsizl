@@ -23,18 +23,32 @@ class InterviewForm(forms.ModelForm):
         }
 
 class RusheeSignupForm(UserCreationForm):
-    username = forms.CharField(max_length=255, label='NetID')
-    first_name = forms.CharField(max_length=50)
-    last_name = forms.CharField(max_length=50)
-    email = forms.EmailField(max_length=254)
-    
+    username = forms.CharField(max_length=255, 
+                               label='NetID',
+                               widget=forms.TextInput(attrs = {'placeholder': 'NetID'}),)
+    first_name = forms.CharField(max_length=50,
+                                 widget=forms.TextInput(attrs = {'placeholder': 'First Name'}),)
+    last_name = forms.CharField(max_length=50,
+                                widget=forms.TextInput(attrs = {'placeholder': 'Last Name'}),)
+    email = forms.EmailField(max_length=254,
+                             widget=forms.TextInput(attrs = {'placeholder': 'Email'}),)
+    password1 = forms.CharField(max_length=255,
+                                label='Password',
+                                widget=forms.PasswordInput(attrs = {'placeholder': 'Password'}),)
+    password2 = forms.CharField(max_length=255,
+                                label='Password confirmation',
+                                widget=forms.PasswordInput(attrs = {'placeholder': 'Password confirmation'}),)
+
     class Meta:
         model = User
         fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', )
 
 class RusheeSigninForm(forms.Form):
-    username = forms.CharField(label='NetID', max_length=255, required=True)
-    password = forms.CharField(widget=forms.PasswordInput, required=True)
+    username = forms.CharField(label='NetID',
+                               max_length=255,
+                               widget=forms.TextInput(attrs = {'placeholder': 'NetID'}),)
+    password = forms.CharField(max_length=255,
+                               widget=forms.PasswordInput(attrs = {'placeholder': 'Password'}),)
     
     def clean(self):
         username = self.cleaned_data['username']
@@ -51,3 +65,9 @@ class RusheeSigninForm(forms.Form):
         password = self.cleaned_data['password']
         user = authenticate(username=username, password=password)
         return user
+    
+    class Meta:
+        widgets = {
+            'username': forms.TextInput(attrs = {'placeholder': 'NetID'}),
+            'password': forms.PasswordInput(attrs = {'placeholder': 'Password'}),
+        }
