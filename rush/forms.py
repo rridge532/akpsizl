@@ -71,3 +71,14 @@ class RusheeSigninForm(forms.Form):
             'username': forms.TextInput(attrs = {'placeholder': 'NetID'}),
             'password': forms.PasswordInput(attrs = {'placeholder': 'Password'}),
         }
+
+class ApplicationForm(forms.ModelForm):
+    class Meta:
+        model = Application
+        exclude = ['rushee']
+        widgets = {
+            'WhyAKPsi': forms.Textarea(attrs={'cols': 80, 'rows': 5}),
+            'involvement': forms.Textarea(attrs={'cols': 80, 'rows': 5}),
+            'aboutme': forms.Textarea(attrs={'cols': 80, 'rows': 5}),
+            'essay': forms.Textarea(attrs={'cols': 80, 'rows': 8}),
+        }
