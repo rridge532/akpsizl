@@ -1,0 +1,30 @@
+{% extends 'base/base_generic.html' %}
+
+{% block banner %} {% endblock %}
+
+{% block main_headertext %}
+<h2>Rush Application</h2>
+<h3>{{ request.user.get_full_name }}</h3>
+{% endblock %}
+
+{% block content %}
+<p>Questions with (*) are shared with the brotherhood.</p>
+<form action="{% url 'rush:application' %}" method="post">
+    {% csrf_token %}
+    <div class="row gtr-50 gtr-uniform">
+        {% for field in form %}
+        <div class="col-12">
+            <h4>{{ field.label }}</h4>
+            <p>{{ field }}</p>
+        </div>
+        {% endfor %}
+        <div class="col-12">
+            <ul class="actions special">
+                <li><input type="submit" value="Submit" /></li>
+                <li><input class="button alt" type="reset" value="Clear"/></li>
+            </ul>
+        </div>    
+    </div>
+</form>
+<p>If extended a bid, be aware of the pinning ceremony and the $80 pinning fee due at that time!</p>
+{% endblock %}
