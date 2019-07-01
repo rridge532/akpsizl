@@ -62,35 +62,41 @@ def changenight(request):
     return render(request, 'rush/changenight.html', {'form': form})
 
 @login_required
-@user_passes_test(brother_check, redirect_field_name=None)
+@user_passes_test(brother_check, redirect_field_name=None)  # Just to be extra sure only let brothers access this view.
+def createsignin(request, rushee, night):
+    signin, created = RusheeSignin.objects.get_or_create(rushee=rushee, night=night)
+    if created:
+        signin.save()
+    message = "You successfully signed in to %s." % night.name
+    buttons = (('New Signin', '/rush/signin'), )
+    altbuttons = (('Home', '/'), )
+    context = {
+        'person': rushee.first_name,
+        'message': message,
+        'buttons': buttons,
+        'altbuttons': altbuttons,
+    }
+    request.session['context'] = context
+    return redirect('rush:thanks')
+
+@login_required
+@user_passes_test(brother_check, redirect_field_name=None) # Only let brothers use this view
+# TODO: Check if the brother is authorized to sign rushees in? Maybe restrict to rush team members?
+# This would required pulling in EventGroup and/or TeamMembership
 def rusheesignin(request):
     night = get_night()
     if night:
         if not night.voting:
             signinform = RusheeSigninForm(request.POST or None)
-            signupform = RusheeSignupForm(request.POST or None)
+            signupform = RusheeSignupForm()
             if request.POST and signinform.is_valid():
                 rushee = signinform.login(request)
                 if rushee:
-                    signin, created = RusheeSignin.objects.get_or_create(rushee=rushee, night=night)
-                    if created:
-                        signin.save()
-                    message = "Your signin for %s has been recorded." % night
-                    buttons = (('New Signin', '/rush/signin'), )
-                    altbuttons = (('Home', '/'), )
-                    context = {
-                        'person': rushee.first_name,
-                        'message': message,
-                        'buttons': buttons,
-                        'altbuttons': altbuttons,
-                    }
-                    request.session['context'] = context
-                    return redirect('rush:thanks')
+                    return createsignin(request, rushee, night)
             context = {
                 'signinform': signinform,
                 'signupform': signupform,
                 'night': night,
-                # 'containersize': 'medium',
             }
             return render(request, 'rush/rusheesignin.html', context)
     message = "We are not currently accepting any new rush applications."
@@ -103,19 +109,26 @@ def rusheesignin(request):
 @user_passes_test(brother_check, redirect_field_name=None)
 def rusheesignup(request):
     night = get_night()
-    if night:
-        if not night.voting:
-            form = RusheeSignupForm(request.POST)
-            if request.method == 'POST' and form.is_valid():
-                form.save()
-                return HttpResponse('success')
-            context = {
-                'signinform': RusheeSigninForm,
-                'signupform': form,
-                'night': night,
-            }
-            return render(request, 'rush/rusheesignin.html', context)
-    return HttpResponseRedirect(reverse('rush:rusheesignin'))
+    if night:                                                       # only allow if it's during rush
+        if not night.voting:                                        # only allow if it's not voting night (throws error if done with night check)
+            if request.method == 'POST':                            # check that the user is trying to submit
+                signupform = RusheeSignupForm(request.POST)               # pull the POST form data into an object
+                if signupform.is_valid():                                 # check that form data is valid
+                    rushee = signupform.save(commit=False)                # save the form to an object but don't write it to the db yet
+                    rushee.username = rushee.username.lower()       # username should be lowercase
+                    rushee.first_name = rushee.first_name.title()   # first letter should be capitalized
+                    rushee.last_name = rushee.last_name.title()     # first letter should be capitalized
+                    rushee.email = rushee.email.lower()             # email should be lowercase
+                    rushee.save()
+                    if rushee:
+                        return createsignin(request, rushee, night)
+                context = {
+                    'signinform': RusheeSigninForm(),
+                    'signupform': signupform,
+                    'night': night,
+                }
+                return render(request, 'rush/rusheesignin.html', context)   # if submitted but form is not valid, reload with errors
+    return HttpResponseRedirect(reverse('rush:rusheesignin'))               # if not submission, redirect to signin view (helps with consistency)
 
 @login_required
 @user_passes_test(brother_check, redirect_field_name=None)
