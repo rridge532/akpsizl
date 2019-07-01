@@ -11,7 +11,7 @@ import qrcode
 
 from users.models import Profile, brother_check, exec_check
 from .models import RushNight, RusheeSignin, Interview, Application, Mention, Vote
-from .forms import ChangeNightForm, InterviewForm, RusheeSigninForm, RusheeSignupForm
+from .forms import ChangeNightForm, InterviewForm, RusheeSigninForm, RusheeSignupForm, ApplicationForm
 
 # REMOVE THIS, THIS IS JUST FOR TESTING TO CONSISTENTLY SET NIGHT
 if cache.get('night') is None:
@@ -24,6 +24,9 @@ def get_night():
     except:
         night = None
     return night
+
+def rushee_check(user):
+    return not user.profile.isbrother and not user.profile.isloa and not user.profile.isexec
 
 def qrcodeimage(request, nightid):
     night = get_object_or_404(RushNight, id=nightid)
@@ -99,7 +102,7 @@ def rusheesignin(request):
                 'night': night,
             }
             return render(request, 'rush/rusheesignin.html', context)
-    message = "We are not currently accepting any new rush applications."
+    message = "We are not currently accepting any new rush signins."
     context = {
         'message': message,
     }
@@ -174,6 +177,32 @@ def interview(request):
         'message': message,
     }
     return render(request, 'base/error.html', context=context)
+
+@login_required
+@user_passes_test(rushee_check, redirect_field_name=None)
+def application(request):
+    rushee = request.user
+    night = get_night()
+    if night:
+        if not night.voting:
+            previousapp = Application.objects.filter(rushee=rushee).first()
+            form = ApplicationForm(request.POST or None, instance=previousapp)
+            if request.POST and form.is_valid():
+                application = form.save(commit=False)
+                application.rushee = rushee
+                application.save()
+                return HttpResponse(application)
+            context = {
+                'form': form,
+                'containersize': 'medium',
+            }
+            return render(request, 'rush/application.html', context)
+    message = "We are not currently accepting any new rush applications."
+    context = {
+        'message': message,
+    }
+    return render(request, 'base/error.html', context=context)
+
 """
 @login_required
 @user_passes_test(exec_check, redirect_field_name=None)
