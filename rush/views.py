@@ -191,7 +191,17 @@ def application(request):
                 application = form.save(commit=False)
                 application.rushee = rushee
                 application.save()
-                return HttpResponse(application)
+                message = "Thanks for submitting a rush application."
+                buttons = (('Edit Application', '/rush/application'), )
+                altbuttons = (('Home', '/'), )
+                context = {
+                    'person': rushee.first_name,
+                    'message': message,
+                    'buttons': buttons,
+                    'altbuttons': altbuttons,
+                }
+                request.session['context'] = context
+                return redirect('rush:thanks')
             context = {
                 'form': form,
                 'containersize': 'medium',
