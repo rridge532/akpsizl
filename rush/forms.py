@@ -23,7 +23,7 @@ class InterviewForm(forms.ModelForm):
         }
 
 class RusheeSignupForm(UserCreationForm):
-    username = forms.CharField(max_length=255, 
+    username = forms.CharField(max_length=255,
                                label='NetID',
                                widget=forms.TextInput(attrs = {'placeholder': 'NetID'}),)
     first_name = forms.CharField(max_length=50,
