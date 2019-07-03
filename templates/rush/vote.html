@@ -1,0 +1,63 @@
+{% extends 'base/base_generic.html' %}
+
+{% block banner %} {% endblock %}
+
+{% block main %}
+    <section id="main" class="container {{ containersize|default:"small" }}">
+        <header>
+            <h2>{{ application.rushee.get_full_name }} ({{ application.rushee.username }}) </h2>
+            <h4># {{ page.number }} of {{ page.paginator.num_pages }}</h4>
+        </header>
+        <div class="box special" style="text-align: left;">
+            <h3>About {{ application.rushee.first_name }}</h3>
+            <p>{{ application.aboutme }}</p>
+            <hr/>
+        
+            <h3>{{ application.get_essaytopic_display }}</h3>
+            <p>{{ application.essay }}</p>
+            <hr/>
+        
+            <h3><strong>Positive Mentions:</strong> {{ positivementions|length }}</h3>
+            {% for mention in positivementions %}
+                <p><strong>Day {{ mention.day }}:</strong> {{ mention.comment }}</p>
+            {% endfor %}
+            <hr/>
+
+            <h3><strong>Negative Mentions:</strong> {{ negativementions|length }}</h3>
+            {% for mention in negativementions %}
+                <p><strong>Day {{ mention.day }}:</strong> {{ mention.comment }}</p>
+            {% endfor %}
+            <hr/>
+        
+            <form action="{{ url }}" method="post">
+                {% csrf_token %}
+                <div class="row gtr-50 gtr-uniform">
+                    {% for field in form %}
+                    <div class="col-4 col-3-narrower col-1-mobilep"></div>
+                    <div class="col-4 col-6-narrower col-10-mobilep">
+                        <p>{{ field }}</p>
+                    </div>
+                    <div class="col-4 col-3-narrower col-1-mobilep"></div>
+                    {% endfor %}
+                    <input type="hidden" name="rushee" id="id_rushee" value="{{ rushee.id }}">
+                    <input type="hidden" name="brother" id="id_brother" value="{{ brother.id }}">
+                    <div class="col-12">
+                        <ul class="actions special">
+                            <li><input type="submit" value="Vote!" /></li>
+                        </ul>
+                    </div>    
+                </div>
+            </form>
+            <div class="col-12">
+                <ul class="actions special">
+                    {% if page.has_previous %}
+                        <li><a href="/rush/vote/{{ page.previous_page_number }}" class="button alt">Previous</a></li>
+                    {% endif %}
+                    {% if page.has_next %}
+                        <li><a href="/rush/vote/{{ page.next_page_number }}" class="button alt">Next</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </section>
+{% endblock %}
