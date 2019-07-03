@@ -9,4 +9,7 @@ urlpatterns = [
     path('signin/', views.rusheesignin, name='rusheesignin'),
     path('signup/', views.rusheesignup, name='rusheesignup'),
     path('application/', views.application, name='application'),
+    path('mention/', views.mention, name='mention'),
+    path('vote/', views.vote, name='vote'),
+    path('vote/<int:page>/', views.vote, name='vote'),
 ]
