@@ -82,3 +82,28 @@ class ApplicationForm(forms.ModelForm):
             'aboutme': forms.Textarea(attrs={'cols': 80, 'rows': 5}),
             'essay': forms.Textarea(attrs={'cols': 80, 'rows': 8}),
         }
+
+class UserModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, user):
+        return "%s (%s)" % (user.get_full_name(), user.username)
+
+class RusheeForm(forms.Form):
+    rushee = UserModelChoiceField(
+        User.objects.filter(profile__isbrother=False, profile__isexec=False, profile__isloa=False).order_by('first_name'),
+        # label = 'Please select a Rushee below:',
+        required = True,
+    )
+
+class MentionForm(forms.ModelForm):
+    class Meta:
+        model = Mention
+        exclude = ['night', 'brother', 'rushee']
+
+class VoteForm(forms.ModelForm):
+    class Meta:
+        model = Vote
+        exclude = ['']
+        widgets = {
+            'brother': forms.HiddenInput(),
+            'rushee': forms.HiddenInput(),
+        }
