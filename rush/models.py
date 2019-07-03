@@ -6,11 +6,6 @@ from django.utils import timezone
 from users.models import Profile
 # Choices
 
-typesofmentions = (
-    (1, "Positive"),
-    (2, "Negative")
-)
-
 gpas = (
     (1, "This is my first semester."),
     (2, "Less Than 2.0"),
@@ -37,13 +32,6 @@ essaytopicchoices = (
     (3, "When is a time you had to be a leader?"),
     (4, "Talk about a time you had to go above and beyond?"),
 	(5, "What specific ways can you contribute to Alpha Kappa Psi?"),
-)
-
-votechoices = (
-    (1, "Yes"),
-    (2, "No"),
-    (3, "Abstain")
-
 )
 
 def validate_not_negative(value):
@@ -91,7 +79,7 @@ class Interview(models.Model):
         unique_together = ('interviewer', 'rushee')
 
 class Application(models.Model):
-    rushee = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'profile__isbrother': False})
+    rushee = models.OneToOneField(User, on_delete=models.CASCADE, limit_choices_to={'profile__isbrother': False})
     address = models.CharField(max_length=200, verbose_name="School Address (Used for bid delivery)")
     cellphone = models.CharField(max_length=30, verbose_name="Cell Phone Number (Used for bid delivery)")
     FRESHMAN = 'FR'
@@ -127,7 +115,19 @@ class Mention(models.Model):
     brother = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'profile__isbrother': True}, related_name='mentiongiven')
     rushee = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'profile__isbrother': False})
     night = models.ForeignKey(RushNight, on_delete=models.CASCADE)
-    mentiontype = models.IntegerField(choices=typesofmentions, verbose_name="Type of Mention", blank=False, default=1)
+    POSITIVE = 'P'
+    NEGATIVE = 'N'
+    TYPES_OF_MENTIONS = [
+        (POSITIVE, 'Positive'),
+        (NEGATIVE, 'Negative'),
+    ]
+    mentiontype = models.CharField(
+        max_length=1,
+        choices=TYPES_OF_MENTIONS,
+        verbose_name="Type of Mention",
+        blank=False,
+        default=POSITIVE,
+    )
     comment = models.CharField(max_length=200, verbose_name="Comment", null=True)
 
     class Meta:
@@ -143,7 +143,19 @@ class Mention(models.Model):
 class Vote(models.Model):
     brother = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'profile__isbrother': True}, related_name='+')
     rushee = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'profile__isbrother': False})
-    choice = models.IntegerField(choices=votechoices, default=3)
+    YES = 'Y'
+    NO = 'N'
+    ABSTAIN = 'A'
+    VOTE_CHOICES = [
+        (YES, 'Yes'),        
+        (NO, 'No'),        
+        (ABSTAIN, 'Abstain'),
+    ]
+    choice = models.CharField(
+        max_length=1,
+        choices=VOTE_CHOICES,
+        default=ABSTAIN,
+    )
 
     class Meta:
         unique_together = ('brother', 'rushee')
