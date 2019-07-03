@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, HttpResponse, HttpResponseRedirec
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.urls import reverse
 from datetime import datetime
 from django.utils import timezone, http
@@ -11,7 +12,7 @@ import qrcode
 
 from users.models import Profile, brother_check, exec_check
 from .models import RushNight, RusheeSignin, Interview, Application, Mention, Vote
-from .forms import ChangeNightForm, InterviewForm, RusheeSigninForm, RusheeSignupForm, ApplicationForm
+from .forms import ChangeNightForm, InterviewForm, RusheeSigninForm, RusheeSignupForm, ApplicationForm, RusheeForm, MentionForm, VoteForm
 
 # REMOVE THIS, THIS IS JUST FOR TESTING TO CONSISTENTLY SET NIGHT
 if cache.get('night') is None:
@@ -208,6 +209,124 @@ def application(request):
             }
             return render(request, 'rush/application.html', context)
     message = "We are not currently accepting any new rush applications."
+    context = {
+        'message': message,
+    }
+    return render(request, 'base/error.html', context=context)
+
+@login_required
+@user_passes_test(brother_check, redirect_field_name=None)
+def mention(request):
+    night = get_night()
+    if night:
+        if not night.voting:
+            # rushee = rusheeform.cleaned_data['rushee']
+            rusheeform = RusheeForm(request.GET or None)
+            mentionform = MentionForm(request.POST or None)
+            if request.method == 'POST':
+                if mentionform.is_valid():
+                    rushee = User.objects.filter(id=request.session['rushee']).first()
+                    previousmention = Mention.objects.filter(rushee=rushee, brother=request.user).first()
+                    mentionform = MentionForm(request.POST or None, instance=previousmention)
+                    mention = mentionform.save(commit=False)
+                    mention.rushee = rushee
+                    mention.brother = request.user
+                    mention.night = night
+                    mention.save()
+                    message = "Thanks for submitting a mention for %s." % mention.rushee.get_full_name()
+                    buttons = (('New Mention', '/rush/mention/'), )
+                    altbuttons = (('Home', '/'), )
+                    context = {
+                        'person': request.user.first_name,
+                        'message': message,
+                        'buttons': buttons,
+                        'altbuttons': altbuttons,
+                    }
+                    request.session['context'] = context
+                    return redirect('rush:thanks')
+            if request.method == 'GET':
+                rusheeform = RusheeForm(request.GET or None)
+                if rusheeform.is_valid():
+                    rushee = rusheeform.cleaned_data['rushee']
+                    request.session['rushee'] = rushee.id
+                    rushee = User.objects.get(id=request.session['rushee'])
+                    previousmention = Mention.objects.filter(rushee=rushee, brother=request.user).first()
+                    mentionform = MentionForm(instance=previousmention)
+                    context = {
+                        'form': mentionform,
+                        'containersize': 'medium',
+                        'rushee': rushee,
+                        'night': night,
+                    }
+                    return render(request, 'rush/mention.html', context)
+            context = {
+                'title': 'Make a Mention',
+                'message': 'Select a Rushee to make a mention.',
+                'parentview': '',
+                'form': rusheeform,
+            }
+            return render(request, 'rush/rushee.html', context)
+    message = "We are not currently accepting any new rush mentions."
+    context = {
+        'message': message,
+    }
+    return render(request, 'base/error.html', context=context)
+
+@login_required
+@user_passes_test(brother_check, redirect_field_name=None)
+def vote(request, page = 1):
+    night = get_night()
+    if night:
+        if night.voting:
+            applications = Application.objects.order_by('rushee__first_name').all()
+            paginator = Paginator(applications, 1)
+            try:
+                page = paginator.page(page)
+            except (EmptyPage, PageNotAnInteger):
+                return HttpResponseRedirect(reverse('rush:vote', kwargs={'page': 1}))
+            application = page.object_list[0]
+            rushee = application.rushee
+            previousvote = Vote.objects.filter(rushee=rushee, brother=request.user).first()
+            form = VoteForm(request.POST, instance=previousvote)
+            if request.method == 'POST' and form.is_valid():
+                vote = form.save(commit=False)
+                vote.save()
+                if page.has_next():
+                    nextpage = page.next_page_number()
+                    page = paginator.page(nextpage)
+                    # Note that this only works since there is a single object on each page, i.e. index is identical to page
+                    nexturl = '/rush/vote/%s/' % page.number
+                    buttons = (('Next Vote', nexturl), )
+                else:
+                    buttons = None
+                message = "Thanks for submitting a vote for %s." % rushee.get_full_name()
+                editurl = '/rush/vote/%s/' % page.number
+                altbuttons = (('Change Vote', editurl), ('Home', '/'), )
+                context = {
+                    'person': request.user.first_name,
+                    'message': message,
+                    'buttons': buttons,
+                    'altbuttons': altbuttons,
+                }
+                request.session['context'] = context
+                return redirect('rush:thanks')
+            mentions = Mention.objects.filter(rushee=rushee).all()
+            positivementions = mentions.filter(mentiontype='P').all()
+            negativementions = mentions.filter(mentiontype='N').all()
+            context = {
+                'page': page,
+                'form': form,
+                'containersize': 'large',
+                'application': application,
+                'positivementions': positivementions,
+                'negativementions': negativementions,
+                'rushee': rushee,
+                'brother': request.user,
+
+            }
+            return render(request, 'rush/vote.html', context)
+            previousvote = Vote.objects.filter
+    message = "Rush voting is not open at this time."
     context = {
         'message': message,
     }
