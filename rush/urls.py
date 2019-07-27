@@ -12,4 +12,5 @@ urlpatterns = [
     path('mention/', views.mention, name='mention'),
     path('vote/', views.vote, name='vote'),
     path('vote/<int:page>/', views.vote, name='vote'),
+    path('bids/', views.biddisplay, name='biddisplay'),
 ]

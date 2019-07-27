@@ -362,3 +362,49 @@ def interviewstats(requrest):
     minenergy = min(interviews, key = lambda x: x.energy)
     minfriend = min(interviews, key = lambda x: x.friendliness)
 """
+@login_required
+@user_passes_test(exec_check, redirect_field_name=None)
+def biddisplay(request):
+    if Vote.objects.count() == 0:
+        context = {
+            'message': "There are no votes for rush.",
+        }
+        return render(request, 'base/error.html', context=context)
+    
+    nobids = []
+    bids = []
+    votes = Vote.objects.all()
+    applications = Application.objects.all()
+    activebrothers = User.objects.filter(profile__isbrother=True, profile__isloa=False).count()
+
+    for application in applications:
+        rushee = application.rushee
+        novotes = votes.filter(rushee=rushee, choice='N').count()
+        totalvotes = votes.filter(rushee=rushee).count()
+        # CHANGE THIS AFTER FINISHED TESTING
+        # if rusheevotes <= 20 or novotes >= (0.25 * activebrothers):
+        if totalvotes <= 2 or novotes >= (0.25 * 20):
+            nobids.append((rushee, novotes, totalvotes))
+        else:
+            bids.append((rushee, novotes, totalvotes))
+    
+    context = {
+        'activebrothers': activebrothers,
+        'nobids': nobids,
+        'bids': bids,
+        'containersize': 'large',
+    }
+    return render(request, 'rush/biddisplay.html', context=context)
+
+# Helpful extra views for rushees, these should be replaced or improved on
+@login_required
+@user_passes_test(exec_check, redirect_field_name=None)
+def rusheeemails(request):
+    return HttpResponse('emails')
+
+@login_required
+@user_passes_test(exec_check, redirect_field_name=None)
+def rusheeaddresses(request):
+    return HttpResponse('addresses')
+
+print(Vote.objects.count())
