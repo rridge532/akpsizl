@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'akpsi.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'local-db/akpsi.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'akpsi.sqlite3'),
     }
 }
 """ 
