@@ -13,4 +13,6 @@ urlpatterns = [
     path('vote/', views.vote, name='vote'),
     path('vote/<int:page>/', views.vote, name='vote'),
     path('bids/', views.biddisplay, name='biddisplay'),
+    path('powerpoint/', views.powerpoint, name='powerpoint'),
+    path('powerpoint/<int:page>/', views.powerpoint, name='powerpoint'),
 ]

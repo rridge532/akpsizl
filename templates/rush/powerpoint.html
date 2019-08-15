@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<!--
+	Alpha by HTML5 UP
+	html5up.net | @n33co
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+{% load static %}
+<html style="max-height:90vh">
+	<head>
+		<title>AKPsi Zeta Lambda</title>
+        <meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+        <link rel="stylesheet" href="{% static 'assets/css/main.css' %}" />
+		<link rel="icon" href="{% static 'images/zllogo.png' %}">
+	</head>
+    <body>
+        <h2 style="text-align: center"> {{ rushee.first_name }} {{rushee.last_name }} - ({{ rushee.username }}) # {{ page.number }} of {{ page.paginator.num_pages }} </h2>
+        <div class="row">
+            <div class="col-6" style="max-height:80vh">
+                <img src="{% static url %}/rusheepics/{{ rushee.username }}.JPG" style="max-width:99%;max-height:80vh">
+            </div>
+            <div class="col-6" style="max-height:80vh">
+                <h4> <strong>MAJOR:</strong> {{ application.major }}</h4>
+                <h4> <strong>YEAR:</strong> {{ application.get_year_in_school_display }}</h4>
+                <h4> <strong>GPA:</strong> {{ application.get_gpa_display }}</h4>
+                <h4> <strong>NIGHTS ATTENDED:</strong> {% for n in nightsattended %}{{ n.night }},{% endfor %}</h4>
+        
+                {% if application.excuses %}
+                    <hr />
+                    <h4><strong>EXCUSES/CONFLICTS:</strong></h4> <p>{{ application.excuses }}</p>
+                {% endif %}
+        
+                <hr />
+                <h4><strong>INTERVIEW SCORES:</strong></h4>
+                {% for key, val in scores.items %}
+                    <h4><strong>{{ key.title }}:</strong> {{ val }}</h4>
+                {% endfor %}
+                
+                <hr />
+                <h4> <strong>NEGATIVE MENTIONS: {{ negativementions|length }}</strong> </h4>
+                {% for mention in negativementions %}
+                    <p> <strong>Day {{ mention.day }}:</strong> {{ mention.comment }} </p>
+                {% endfor %}
+        
+                <hr />
+                <h4> <strong>NEGATIVE INTERVIEW COMMENTS: </strong> </h4>
+                {% for interivew in interviews %}
+                    {% if interivew.comment != "" %}
+                    <p> <strong>{{ forloop.counter }}:</strong> {{ interivew.comment }} </p>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <ul class="actions special">
+                <li><a href="{% url 'index' %}" class="button alt">Home</a> </li>
+            {% if page.has_previous %}
+                <li><a href="/rush/powerpoint/{{ page.previous_page_number }}" class="button">Previous</a></li>
+            {% endif %}
+
+            {% if page.has_next %}
+                <li><a href="/rush/powerpoint/{{ page.next_page_number }}" class="button">Next</a></li>
+            {% endif %}
+            </ul>
+        </div>
+
+		<!-- Scripts -->
+			<script src="{% static 'assets/js/jquery.min.js' %}"></script>
+			<script src="{% static 'assets/js/jquery.dropotron.min.js' %}"></script>
+			<script src="{% static 'assets/js/jquery.scrollex.min.js' %}"></script>
+			<script src="{% static 'assets/js/browser.min.js' %}"></script>
+			<script src="{% static 'assets/js/breakpoints.min.js' %}"></script>
+			<script src="{% static 'assets/js/util.js' %}"></script>
+			<script src="{% static 'assets/js/main.js' %}"></script>
+
+	</body>
+</html>

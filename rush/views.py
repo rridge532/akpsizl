@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.urls import reverse
+from django.db.models import Avg
 from datetime import datetime
 from django.utils import timezone, http
 from django.core.cache import cache
@@ -36,6 +37,13 @@ def qrcodeimage(request, nightid):
     response = HttpResponse(content_type="image/png")
     img.save(response, "PNG")
     return response
+
+def get_InterviewScores(rushee):
+    qs = Interview.objects.filter(rushee=rushee).aggregate(Avg('interest'), Avg('energy'), Avg('friendliness'))
+    returndict = {}
+    for key, val in qs.items():
+        returndict[key.split('__')[0]] = val
+    return returndict
 
 # Create your views here.
 
@@ -325,7 +333,45 @@ def vote(request, page = 1):
 
             }
             return render(request, 'rush/vote.html', context)
-            previousvote = Vote.objects.filter
+    message = "Rush voting is not open at this time."
+    context = {
+        'message': message,
+    }
+    return render(request, 'base/error.html', context=context)
+
+@login_required
+@user_passes_test(exec_check, redirect_field_name=None)
+def powerpoint(request, page = 1):
+    night = get_night()
+    if night:
+        if night.voting:
+            applications = Application.objects.order_by('rushee__first_name').all()
+            paginator = Paginator(applications, 1)
+            try:
+                page = paginator.page(page)
+            except (EmptyPage, PageNotAnInteger):
+                return HttpResponseRedirect(reverse('rush:powerpoint', kwargs={'page': 1}))
+            application = page.object_list[0]
+            rushee = application.rushee
+            mentions = Mention.objects.filter(rushee=rushee).all()
+            positivementions = mentions.filter(mentiontype='P').all()
+            negativementions = mentions.filter(mentiontype='N').all()
+            interviews = Interview.objects.filter(rushee=rushee).all()
+            nightsattended = RusheeSignin.objects.filter(rushee=rushee).all()
+            scores = get_InterviewScores(rushee)
+            context = {
+                'page': page,
+                'containersize': 'large',
+                'application': application,
+                'positivementions': positivementions,
+                'negativementions': negativementions,
+                'interviews': interviews,
+                'scores': scores,
+                'nightsattended': nightsattended,
+                'rushee': rushee,
+
+            }
+            return render(request, 'rush/powerpoint.html', context)
     message = "Rush voting is not open at this time."
     context = {
         'message': message,
@@ -335,7 +381,7 @@ def vote(request, page = 1):
 """
 @login_required
 @user_passes_test(exec_check, redirect_field_name=None)
-def interviewstats(requrest):
+def interviewstats(request):
     num = Interview.objects.count()
     interviews = Interview.objects.all()
 
