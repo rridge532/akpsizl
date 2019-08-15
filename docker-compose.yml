@@ -2,9 +2,8 @@ version: '3'
 
 services:
   db:
-    image: sqlite
     volumes:
-      - data:/var/lib/sqlite/data
+      - data:/var/lib/akpsi
   web:
     build: .
     command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
