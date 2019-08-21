@@ -5,4 +5,4 @@
 *.pyc
 __pycache__/
 local_settings.pyc
-*.ssqlite3
+*.sqlite3
