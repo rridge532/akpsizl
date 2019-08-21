@@ -1,11 +1,16 @@
 version: '3'
 
 services:
-  web:
+  reverseproxy:
+    image: reverseproxy
+    ports:
+      - 4000:8000
+  akpsi:
+    depends_on:
+      - reverseproxy
     build: .
+    restart: always
     command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     container_name: akpsi
     volumes:
       - ".:/akpsi"
-    ports:
-      - "8000:8000"
