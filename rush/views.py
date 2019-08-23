@@ -330,10 +330,41 @@ def vote(request, page = 1):
                 'negativementions': negativementions,
                 'rushee': rushee,
                 'brother': request.user,
-
             }
             return render(request, 'rush/vote.html', context)
     message = "Rush voting is not open at this time."
+    context = {
+        'message': message,
+    }
+    return render(request, 'base/error.html', context=context)
+
+@login_required
+@user_passes_test(brother_check, redirect_field_name=None)
+def prevote(request, page = 1):
+    night = get_night()
+    if night:
+        applications = Application.objects.order_by('rushee__first_name').all()
+        paginator = Paginator(applications, 1)
+        try:
+            page = paginator.page(page)
+        except (EmptyPage, PageNotAnInteger):
+            return HttpResponseRedirect(reverse('rush:prevote', kwargs={'page': 1}))
+        application = page.object_list[0]
+        rushee = application.rushee
+        mentions = Mention.objects.filter(rushee=rushee).all()
+        positivementions = mentions.filter(mentiontype='P').all()
+        negativementions = mentions.filter(mentiontype='N').all()
+        context = {
+            'page': page,
+            'containersize': 'large',
+            'application': application,
+            'positivementions': positivementions,
+            'negativementions': negativementions,
+            'rushee': rushee,
+            'brother': request.user,
+        }
+        return render(request, 'rush/prevote.html', context)
+    message = "Rush is not open at this time."
     context = {
         'message': message,
     }
@@ -377,6 +408,8 @@ def powerpoint(request, page = 1):
         'message': message,
     }
     return render(request, 'base/error.html', context=context)
+
+
 
 """
 @login_required
