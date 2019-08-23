@@ -61,7 +61,7 @@ def changenight(request):
         cache.set('night', night, None)
         newnight = get_night()
         message = "You have successfully changed the night to %s." % newnight
-        buttons = (('Home', '/'), )
+        buttons = (('Rush','/rush'), )
         context = {
             'person': request.user.first_name,
             'message': message,
@@ -81,7 +81,7 @@ def createsignin(request, rushee, night):
         signin.save()
     message = "You successfully signed in to %s." % night.name
     buttons = (('New Signin', '/rush/signin'), )
-    altbuttons = (('Home', '/'), )
+    altbuttons = (('Rush','/rush'), )
     context = {
         'person': rushee.first_name,
         'message': message,
@@ -161,7 +161,7 @@ def interview(request):
                     newinterview.save
                     message = "Your interview with %s has been recorded." % (form.cleaned_data['rushee'])
                     interview = ('New Interview', '/rush/interview')
-                    home = ('Home', '/')
+                    home = ('Rush', '/rush')
                     buttons = (interview, )
                     altbuttons = (home, )
                     context = {
@@ -202,7 +202,7 @@ def application(request):
                 application.save()
                 message = "Thanks for submitting a rush application."
                 buttons = (('Edit Application', '/rush/application'), )
-                altbuttons = (('Home', '/'), )
+                altbuttons = (('Home', '/'), ('Rush','/rush'), )
                 context = {
                     'person': rushee.first_name,
                     'message': message,
@@ -243,7 +243,7 @@ def mention(request):
                     mention.save()
                     message = "Thanks for submitting a mention for %s." % mention.rushee.get_full_name()
                     buttons = (('New Mention', '/rush/mention/'), )
-                    altbuttons = (('Home', '/'), )
+                    altbuttons = (('Rush','/rush'), )
                     context = {
                         'person': request.user.first_name,
                         'message': message,
@@ -309,7 +309,7 @@ def vote(request, page = 1):
                     buttons = None
                 message = "Thanks for submitting a vote for %s." % rushee.get_full_name()
                 editurl = '/rush/vote/%s/' % page.number
-                altbuttons = (('Change Vote', editurl), ('Home', '/'), )
+                altbuttons = (('Change Vote', editurl), ('Rush','/rush'), )
                 context = {
                     'person': request.user.first_name,
                     'message': message,
