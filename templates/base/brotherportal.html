@@ -1,0 +1,59 @@
+{% extends 'base/base_generic.html' %}
+{% load static %}
+
+{% block banner %} {% endblock %}
+
+{% block main %}
+	<section id="main" class="container">
+			<header class="major">
+				<h2>AKPsi ZL Brother Portal</h2>
+			</header>
+
+		<div class="col-12">
+			<div class="col-12">
+
+				<section class="box special">
+						<span class="icon major fa-users accent2"></span>
+					<h3>Attendance</h3>
+					<ul class="actions special">
+						<li><a href="{% url 'attendance:userattendance' %}" class="button alt">My Attendance</a></li>
+                    </ul>
+				</section>
+			</div>
+			<div class="col-12">
+
+				<section class="box special">
+						<span class="icon major fa-university accent4"></span>
+					<h3>Rush</h3>
+					<ul class="actions special">
+						<li><a href="{% url 'rush:mention' %}" class="button alt">Mention</a></li>
+                        <li><a href="{% url 'rush:interview' %}" class="button alt">Interview</a></li>
+                        <li><a href="{% url 'rush:vote' %}" class="button alt">Vote</a></li>
+                        <li><a href="{% url 'rush:prevote' %}" class="button alt">Rushees</a></li>
+					</ul>
+                </section>
+
+            </div>
+            {% if request.user.profile.isexec %}
+            <div class="col-12">
+
+				<section class="box special">
+						<span class="icon major fa-lock accent1"></span>
+					<h3>Exec</h3>
+					<ul class="actions special">
+						<li><a href="{% url 'attendance:brothercredits' %}" class="button alt">Credits</a></li>
+                        <li><a href="{% url 'rush:changenight' %}" class="button alt">Change Rush Night</a></li>
+                        <li><a href="{% url 'rush:rusheesignin' %}" class="button alt">Rushee Signin</a></li>
+                        <li><a href="{% url 'rush:powerpoint' %}" class="button alt">Voting Powerpoint</a></li>
+                        <li><a href="{% url 'rush:biddisplay' %}" class="button alt">Bids</a></li>
+					</ul>
+                </section>
+
+            </div>
+            {% endif %}
+		</div>
+
+	</section>
+
+
+{% endblock %}
