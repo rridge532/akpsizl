@@ -7,9 +7,12 @@ from django.contrib.auth.decorators import login_required
 def handler404(request, exception):
     message = [
         "Whoops, looks like the page you're looking for doesn't exist.",
+        "Oh my, the Oompa Loompas seem to have lost the page you're looking for.",
+        "On Wednesdays we wear pink, and on this page we tell you the page you're looking for doesn't exist.",
+        "These aren't the droids, I mean pages, you are looking for."
     ]
     context = {
-        'message': message[randint(0,1)]
+        'message': message[randint(0,3)]
     }
     return render(request, 'base/error.html', context, status=404)
 
@@ -17,9 +20,11 @@ def handler404(request, exception):
 def handler500(request):
     message = [
         "Oh no, we couldn't find what it is that you're looking for.",
+        "The Oompa Loompas are confused. They couldn't find what you're looking for.",
+        "We couldn't find the content you were looking for. So not fetch.",
     ]
     context = {
-        'message': message[randint(0,1)]
+        'message': message[randint(0,2)]
     }
     return render(request, 'base/error.html', context, status=500)
 
