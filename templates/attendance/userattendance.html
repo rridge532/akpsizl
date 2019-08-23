@@ -3,12 +3,18 @@
 {% block banner %} {% endblock %}
 
 {% block main_headertext %}
-    <h3>Credits for {{ user.first_name }} {{ user.last_name }} </h3>
+    <h2>{{ user.first_name }} {{ user.last_name }} </h2>
     <h4>Senior Status: {% if user.profile.issenior %} Yes {% else %} No {% endif %}</h4>
     <h4>LOA Status: {% if user.profile.isloa %} Yes {% else %} No {% endif %}</h4>
-    {% endblock %}
+    {% if user == request.user %}
+    <ul class="actions special">
+        <li><a href="{% url 'password_change' %}" class="button alt">Change Password</a></li>
+    </ul>
+    {% endif %}
+{% endblock %}
 
 {% block content %}
+    <h2>Event Attendance</h2>
     {% for evg in evgsignins %}
         <h3>{{ evg.eventgroup.name|title }}</h3>
         <p>

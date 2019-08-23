@@ -26,6 +26,7 @@ urlpatterns = [
     path('', include('base.urls')),
     # path('users/', include('users.urls')),
     path('accounts/login/', auth_views.LoginView.as_view(redirect_authenticated_user=True), name='login'),
+    path('accounts/password_change/', base_views.password_change, name='password_change'),
     path('accounts/', include('django.contrib.auth.urls')),
 ]
 
