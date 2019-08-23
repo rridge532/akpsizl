@@ -31,6 +31,9 @@
         
             <div class="col-12">
                 <ul class="actions special">
+                    <li><a href="{% url 'rush:mention' %}?rushee={{ application.rushee.id }}" class="button">Mention</a></li>
+                </ul>
+                <ul class="actions special">
                     {% if page.has_previous %}
                         <li><a href="/rush/prevote/{{ page.previous_page_number }}" class="button alt">Previous</a></li>
                     {% endif %}
