@@ -19,7 +19,7 @@ from users.models import Profile, brother_check, exec_check
 # From qrcodeimage and getqrimage with removal of signout
 def qrcodeimage(request, eventid):
     event = get_object_or_404(Event, id=eventid)
-    address = 'https://akpsirush.com/attendance/{}/{}/signin'.format(event.id, event.slug)
+    address = 'https://akpsizl.com/attendance/{}/{}/signin'.format(event.id, event.slug)
     img = qrcode.make(address)
     response = HttpResponse(content_type="image/png")
     img.save(response, "PNG")
@@ -157,3 +157,12 @@ def brothercredits(request):
     }
 
     return render(request, 'attendance/brothercredits.html', context=context)
+
+@login_required
+@user_passes_test(exec_check, redirect_field_name=None)
+def events(request):
+    eventgroups = EventGroup.objects.all()
+    context = {
+        'eventgroups': eventgroups,
+    }
+    return render(request, 'attendance/events.html', context=context)
