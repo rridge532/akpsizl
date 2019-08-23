@@ -8,6 +8,12 @@
 {% endblock %}
 
 {% block content %}
+    <ul class="actions special">
+        <li><a href="/attendance/events" class="button alt">Event List</a></li>
+        <li><a href="/attendance/{{ event.id }}/qrcode" class="button">QR Code</a></li>
+        <li><a href="/attendance/{{ event.id }}/signinqr" class="button">Signin QR</a></li>
+    </ul>
+
     {% if signincount < 1 %}
     <h3>There are no attendees</h3>>
     {% else %}

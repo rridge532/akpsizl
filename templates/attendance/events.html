@@ -1,0 +1,20 @@
+{% extends 'base/base_generic.html' %}
+
+{% block banner %} {% endblock %}
+
+{% block main_headertext %}
+<h2>Events</h2>
+{% endblock %}
+
+{% block content %}
+    {% for eventgroup in eventgroups %}
+        <h2 style="text-align:left;">{{ eventgroup.name }}</h2>
+        <p style="text-align:left;">Credits Needed: {{ eventgroup.needed_credits }} <br />Credits Available: {{ eventgroup.credits_available }}</p>
+        <ul style="text-align:left; list-style-type:none; list-style-position:outside;">
+        {% for event in eventgroup.get_events %}
+            <li><a href="/attendance/{{ event.id }}/eventattendance">{{ event.name }}: {{ event.date }}</a></li>
+        {% endfor %}
+        </ul>
+    {% endfor %}
+
+{% endblock %}

@@ -3,7 +3,7 @@ from . import views
 
 app_name = 'attendance'
 urlpatterns = [
-    # path('', views.portal, name='portal'),
+    path('events/', views.events, name='events'),
     path('<int:eventid>/qrcode', views.qrcodeimage, name='qrcodeimage'),
     path('<int:eventid>/signinqr', views.signinqr, name='signinqr'),
     path('<int:eventid>/<str:eventslug>/signin/', views.signinapi, name='signinapi'),
