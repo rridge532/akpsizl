@@ -1,0 +1,18 @@
+{% extends 'base/base_generic.html' %}
+
+{% block banner %} {% endblock %}
+
+{% block main_headertext %}
+    <h2>Edit Profile for {{ request.user.username }}</h2>
+{% endblock %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    {{ form }} 
+    <br />
+    <ul class="actions special">
+        <li><input type="submit" value="Save Changes"/></li>
+    </ul>
+</form>
+{% endblock %}
