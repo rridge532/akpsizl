@@ -1,0 +1,54 @@
+{% extends 'base/base_generic.html' %}
+{% load static %}
+
+{% block banner %} {% endblock %}
+
+{% block main %}
+	<section id="main" class="container">
+			<header class="major">
+				<h2>AKPsi ZL Rush Portal</h2>
+			</header>
+
+		<div class="row">
+            <div class="col-6 col-12-narrower">
+                <section class="box special">
+                    <span class="icon major fa-university accent4"></span>
+                    {% if request.user.profile.isbrother %}
+                        <h3>Brother Activities</h3>
+                        <ul class="actions special"><li><a href="{% url 'rush:mention' %}" class="button alt">Mention</a></li></ul>
+                        <ul class="actions special"><li><a href="{% url 'rush:interview' %}" class="button alt">Interview</a></li></ul>
+                        <ul class="actions special"><li><a href="{% url 'rush:prevote' %}" class="button alt">Rushees</a></li></ul>
+                        <ul class="actions special"><li><a href="{% url 'rush:vote' %}" class="button alt">Vote</a></li></ul>
+                    {% else %}
+                        <h3>Rushee Activities</h3>
+                        <p>Use the link below to submit a Rush application.</p>
+                        <ul class="actions special">
+                            <li><a href="{% url 'rush:application' %}" class="button alt">Application</a></li>
+                        </ul>
+                    {% endif %}
+                </section>
+            </div>
+
+            {% if request.user.profile.isexec %}
+                <div class="col-6 col-12-narrower">
+                    <section class="box special">
+                        <span class="icon major fa-lock accent1"></span>
+                        <h3>Exec</h3>
+                        <ul class="actions special">
+                            <li><a href="{% url 'rush:changenight' %}" class="button alt">Change Rush Night</a></li>
+                            <li><a href="{% url 'rush:rusheesignin' %}" class="button alt">Rushee Signin</a></li>
+                        </ul>
+                        <ul class="actions special">
+                            <li><a href="{% url 'rush:powerpoint' %}" class="button alt">Voting Powerpoint</a></li>
+                            <li><a href="{% url 'rush:biddisplay' %}" class="button alt">Bids</a></li>
+                        </ul>
+                        <ul class="actions special"><li><a href="{% url 'rush:application' %}" class="button alt">New Rush Application</a></li></ul>
+                    </section>
+                </div>
+            {% endif %}
+		</div>
+
+	</section>
+
+
+{% endblock %}
