@@ -32,27 +32,49 @@
 					<h1><a href="{% url 'index' %}">Alpha Kappa Psi ZL</a></h1>
 					<nav id="nav">
 						<ul>
-							<li><a href={% if request.user.is_authenticated %}
-										"{% url 'generic' %}" 
+							<li><a href="{% if request.user.is_authenticated %}
+											{% url 'portal' %} 
 										{% else %}
-										"{% url 'index' %}"
-										{% endif %}>
+											{% url 'index' %}
+										{% endif %}">
 								Home
 							</a></li>
 							{% if request.user.is_authenticated %}
 							<li>
 								<a href="#" class="icon fa-angle-down">Menu</a>
 								<ul>
-									<li><a href="{% url 'generic' %}">Generic</a></li>
-									<li><a href="{% url 'contact' %}">Contact</a></li>
-									<li><a href="{% url 'elements' %}">Elements</a></li>
+									{% if request.user.profile.isexec %}
+									<li><a href="{% url 'admin:index' %}">Administration</a></li>
 									<li>
-										<a href="#">Submenu</a>
+										<a href="#">Attendance</a>
 										<ul>
-											<li><a href="#">Option One</a></li>
-											<li><a href="#">Option Two</a></li>
-											<li><a href="#">Option Three</a></li>
-											<li><a href="#">Option Four</a></li>
+											<li><a href="{% url 'attendance:brothercredits' %}">Credits</a></li>
+											<li><a href="{% url 'attendance:events' %}">Events</a></li>
+										</ul>
+									</li>
+									{% endif %}
+									{% if request.user.profile.isbrother %}
+									<li><a href="{% url 'attendance:userattendance' %}">My Attendance</a></li>
+									<li><a href="{% url 'portal' %}">Brother Portal</a></li>
+									{% endif %}
+									<li>
+										<a href="{% url 'rush:portal' %}">Rush</a>
+										<ul>
+											{% if request.user.profile.isbrother %}
+											<li><a href="{% url 'rush:mention' %}">Mention</a></li>
+											<li><a href="{% url 'rush:interview' %}">Interview</a></li>
+											<li><a href="{% url 'rush:prevote' %}">Rushees</a></li>
+											<li><a href="{% url 'rush:vote' %}">Vote</a></li>
+											{% else %}
+											<li><a href="{% url 'rush:application' %}">Application</a></li>											
+											{% endif %}
+											{% if request.user.profile.isexec %}
+											<li><a href="{% url 'rush:changenight' %}">Change Rush Night</a></li>
+											<li><a href="{% url 'rush:rusheesignin' %}">Rushee Signin</a></li>
+											<li><a href="{% url 'rush:powerpoint' %}">Voting Powerpoint</a></li>
+											<li><a href="{% url 'rush:biddisplay' %}">Bids</a></li>
+											<li><a href="{% url 'rush:application' %}">New Rush Application</a></li>
+											{% endif %}
 										</ul>
 									</li>
 								</ul>
