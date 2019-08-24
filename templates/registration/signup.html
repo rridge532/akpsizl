@@ -1,0 +1,41 @@
+{% extends 'base/base_generic.html' %}
+
+{% block banner %} {% endblock %}
+
+{% block main_headertext %}
+    <h2>Brother Signup</h2>
+{% endblock %}
+
+{% block content %}
+    {% if form.errors %}
+        {% for field in form %}
+            {% for error in field.errors %}
+                <div class="error">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+        {% endfor %}
+        {% for error in signupform.non_field_errors %}
+            <div class="error">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form action="{% url 'signup' %}" method="post">
+        {% csrf_token %}
+        <div class="row gtr-50 gtr-uniform">
+            {% for field in form %}
+            <div class="col-12">
+                <p>{{ field }}</p>
+            </div>
+            {% endfor %}
+            <div class="col-12">
+                <ul class="actions special">
+                    <li><input type="submit" value="Submit" /></li>
+                    <li><a href="{{ url }}" class="button alt">Clear</a></li>
+                </ul>
+            </div>    
+        </div>
+    </form>
+{% endblock %}

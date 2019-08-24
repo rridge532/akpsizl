@@ -9,4 +9,5 @@ urlpatterns = [
     path('edit_profile/', views.edit_profile, name='edit_profile'),
     path('password_change/', base_views.password_change, name='password_change'),
     path('', include('django.contrib.auth.urls')),
+    path('signup', views.signup, name='signup'),
 ]

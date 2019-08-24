@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth import update_session_auth_hash, authenticate, login
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserChangeForm
+from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import EditProfileForm
+from .forms import EditProfileForm, BrotherSignupForm
 
 # Create your views here.
 
@@ -21,3 +21,27 @@ def edit_profile(request):
     else:
         form = EditProfileForm(instance=request.user)
     return render(request, 'users/edit_profile.html', {'form': form})
+
+def signup(request):
+    if request.method == 'POST':
+        form = BrotherSignupForm(request.POST)
+        if form.is_valid():
+            brother = form.save(commit=False)
+            brother.username = brother.username.lower()
+            brother.first_name = brother.first_name.title()
+            brother.last_name = brother.last_name.title()
+            brother.email = brother.email.lower()
+            brother.save()
+            if brother:
+                brother.profile.isbrother = True
+                brother.profile.isactive = True
+                brother.profile.isbrother = False
+                brother.profile.isloa = False
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            return redirect('portal')
+    else:
+        form = BrotherSignupForm()
+    return render(request, 'registration/signup.html', {'form': form})
