@@ -8,6 +8,7 @@ from .forms import EditProfileForm, BrotherSignupForm
 
 # Create your views here.
 
+@login_required
 def edit_profile(request):
     if request.method == 'POST':
         form = EditProfileForm(request.POST, instance=request.user)
@@ -34,9 +35,7 @@ def signup(request):
             brother.save()
             if brother:
                 brother.profile.isbrother = True
-                brother.profile.isactive = True
-                brother.profile.isbrother = False
-                brother.profile.isloa = False
+                brother.save()
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)

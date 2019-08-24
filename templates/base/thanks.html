@@ -1,0 +1,21 @@
+{% extends 'base/base_generic.html' %}
+
+{% block banner %} {% endblock %}
+
+{% block main_headertext %}
+    <h2>Thank you, {{ person }}</h2>
+{% endblock %}
+
+{% block content %}
+    <p>{{ message }}</p><br>
+    <div class="col-12">
+        <ul class="actions special">
+            {% for button in buttons %}
+                <li><a href="{{ button.1 }}" class="button">{{ button.0 }}</a></li>
+            {% endfor %}
+            {% for button in altbuttons %}
+                <li><a href="{{ button.1 }}" class="button alt">{{ button.0 }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
