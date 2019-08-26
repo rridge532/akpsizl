@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.forms import ModelForm
+from .models import SignupToken
 
 
 class EditProfileForm(ModelForm):
@@ -32,4 +33,19 @@ class BrotherSignupForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', )
+        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2',)
+
+class SignupTokenForm(forms.Form):
+    token = forms.CharField(max_length=255,
+                            label='Signup Token',
+                            widget=forms.TextInput(attrs = {'placeholder': 'Signup Token'}),)
+                            
+    def clean(self):
+        token = self.cleaned_data['token']
+        tokenmatch = SignupToken.objects.filter(token=token).first()
+        if tokenmatch:
+            if not tokenmatch.signupallowed:
+                raise forms.ValidationError("Your signup token has expired.")
+        else:
+            raise forms.ValidationError("Your signup token is invalid.")
+        return self.cleaned_data

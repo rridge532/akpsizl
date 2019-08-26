@@ -7,8 +7,15 @@
 {% endblock %}
 
 {% block content %}
-    {% if form.errors %}
-        {% for field in form %}
+    {% if signupform.errors or tokenform.errors %}
+        {% for field in signupform %}
+            {% for error in field.errors %}
+                <div class="error">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+        {% endfor %}
+        {% for field in tokenform %}
             {% for error in field.errors %}
                 <div class="error">
                     <strong>{{ error|escape }}</strong>
@@ -20,13 +27,23 @@
                 <strong>{{ error|escape }}</strong>
             </div>
         {% endfor %}
+        {% for error in tokenform.non_field_errors %}
+            <div class="error">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
     {% endif %}
 
     <form action="{% url 'signup' %}" method="post">
         {% csrf_token %}
         <div class="row gtr-50 gtr-uniform">
-            {% for field in form %}
+            {% for field in signupform %}
             <div class="col-12">
+                <p>{{ field }}</p>
+            </div>
+            {% endfor %}
+            {% for field in tokenform %}
+            <div class = "col-12">
                 <p>{{ field }}</p>
             </div>
             {% endfor %}

@@ -4,7 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import EditProfileForm, BrotherSignupForm
+from .forms import EditProfileForm, BrotherSignupForm, SignupTokenForm
+from .models import SignupToken
 
 # Create your views here.
 
@@ -25,22 +26,32 @@ def edit_profile(request):
 
 def signup(request):
     if request.method == 'POST':
-        form = BrotherSignupForm(request.POST)
-        if form.is_valid():
-            brother = form.save(commit=False)
-            brother.username = brother.username.lower()
-            brother.first_name = brother.first_name.title()
-            brother.last_name = brother.last_name.title()
-            brother.email = brother.email.lower()
-            brother.save()
-            if brother:
-                brother.profile.isbrother = True
-                brother.save()
-            username = form.cleaned_data.get('username')
-            raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=raw_password)
-            login(request, user)
-            return redirect('portal')
+        signupform = BrotherSignupForm(request.POST, prefix='signupform')
+        tokenform = SignupTokenForm(request.POST, prefix='tokenform')
+        print("tokenform-token")
+        if signupform.is_valid() and tokenform.is_valid():
+            tokenmatch = SignupToken.objects.filter(token=tokenform.cleaned_data.get('token')).first()
+            if tokenmatch:
+                if tokenmatch.signupallowed:
+                    brother = signupform.save(commit=False)
+                    brother.username = brother.username.lower()
+                    brother.first_name = brother.first_name.title()
+                    brother.last_name = brother.last_name.title()
+                    brother.email = brother.email.lower()
+                    brother.save()
+                    if brother:
+                        brother.profile.isbrother = True
+                        brother.save()
+                    username = signupform.cleaned_data.get('username')
+                    raw_password = signupform.cleaned_data.get('password1')
+                    user = authenticate(username=username, password=raw_password)
+                    login(request, user)
+                    return redirect('portal')
     else:
-        form = BrotherSignupForm()
-    return render(request, 'registration/signup.html', {'form': form})
+        signupform = BrotherSignupForm(prefix='signupform')
+        tokenform = SignupTokenForm(prefix='tokenform')
+    context = {
+        'signupform': signupform,
+        'tokenform': tokenform,
+    }
+    return render(request, 'registration/signup.html', context)

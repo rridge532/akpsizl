@@ -26,3 +26,10 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
     instance.profile.save()
+
+class SignupToken(models.Model):
+    token = models.CharField(max_length=255, unique=True, blank=False)
+    signupallowed = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.token
