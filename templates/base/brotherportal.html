@@ -10,8 +10,12 @@
         </header>
 
 		<div class="row">
-            {% if request.user.profile.isbrother %}
+			{% if request.user.profile.isbrother %}
+			{% if request.user.profile.isexec %}
 			<div class="col-6 col-12-narrower">
+			{% else %}
+			<div class="col-12">
+			{% endif %}
 				<section class="box special">
 					<span class="icon major fa-users accent2"></span>
 					<h3>Attendance</h3>

@@ -4,13 +4,17 @@
 {% block banner %} {% endblock %}
 
 {% block main %}
-	<section id="main" class="container">
+	<section id="main" class="container {% if not request.user.profile.isexec %} small {% endif %}">
 			<header class="major">
 				<h2>AKPsi ZL Rush Portal</h2>
 			</header>
 
 		<div class="row">
+            {% if request.user.profile.isexec %}
             <div class="col-6 col-12-narrower">
+            {% else %}
+            <div class="col-12">
+            {% endif %}
                 <section class="box special">
                     <span class="icon major fa-university accent4"></span>
                     {% if request.user.profile.isbrother %}
