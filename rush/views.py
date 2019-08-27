@@ -460,9 +460,7 @@ def biddisplay(request):
         rushee = application.rushee
         novotes = votes.filter(rushee=rushee, choice='N').count()
         totalvotes = votes.filter(rushee=rushee).count()
-        # CHANGE THIS AFTER FINISHED TESTING
-        # if rusheevotes <= 20 or novotes >= (0.25 * activebrothers):
-        if totalvotes <= 2 or novotes >= (0.25 * 20):
+        if totalvotes <= 20 or novotes >= (0.25 * activebrothers):
             nobids.append((rushee, novotes, totalvotes))
         else:
             bids.append((rushee, novotes, totalvotes))
@@ -478,12 +476,26 @@ def biddisplay(request):
 # Helpful extra views for rushees, these should be replaced or improved on
 @login_required
 @user_passes_test(exec_check, redirect_field_name=None)
-def rusheeemails(request):
-    return HttpResponse('emails')
+def emails(request):
+    rushees = User.objects.filter(profile__isbrother=False, profile__isexec=False, profile__isloa=False).all()
+    emails = {(rushee.email, ) for rushee in rushees}
+    context = {
+        'list': emails,
+    }
+    return render(request, 'rush/rushlist.html', context)
 
 @login_required
 @user_passes_test(exec_check, redirect_field_name=None)
-def rusheeaddresses(request):
-    return HttpResponse('addresses')
-
-print(Vote.objects.count())
+def addresses(request):
+    rushees = User.objects.filter(profile__isbrother=False, profile__isexec=False, profile__isloa=False).all()
+    addresses = []
+    for rushee in rushees:
+        if hasattr(rushee, 'application'):
+            rushee_name = rushee.get_full_name()
+            rushee_details = rushee.application.address + ", " + rushee.email + ", " + rushee.application.cellphone
+            addresses.append((rushee_name, rushee_details,))
+    context = {
+        'list': addresses,
+        'containersize': 'large',
+    }
+    return render(request, 'rush/rushlist.html', context)

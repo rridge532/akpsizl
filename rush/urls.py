@@ -20,4 +20,6 @@ urlpatterns = [
     path('vote/', views.vote, name='vote'),
     path('vote/<int:page>/', views.vote, name='vote'),
     path('thanks/', views.thanks, name='thanks'),
+    path('emails/', views.emails, name='emails'),
+    path('addresses/', views.addresses, name='addresses'),
 ]

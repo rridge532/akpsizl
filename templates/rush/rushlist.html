@@ -1,0 +1,16 @@
+{% extends 'base/base_generic.html' %}
+
+{% block banner %} {% endblock %}
+
+{% block main_headertext %}
+    <h2>Rushee Emails</h2>
+{% endblock %}
+
+{% block content %}
+    {% for object in list %}
+        {% for value in object %}
+            {{ value }},
+        {% endfor %}
+        <br />
+    {% endfor %}
+{% endblock %}
