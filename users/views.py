@@ -1,9 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth import update_session_auth_hash, authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+import qrcode
+
 from .forms import EditProfileForm, BrotherSignupForm, SignupTokenForm
 from .models import SignupToken
 
@@ -55,3 +57,11 @@ def signup(request):
         'tokenform': tokenform,
     }
     return render(request, 'registration/signup.html', context)
+
+@login_required
+def signupqr(request):
+    address = 'https://akpsizl.com/accounts/signup'
+    img = qrcode.make(address)
+    response = HttpResponse(content_type="image/png")
+    img.save(response, "PNG")
+    return response
