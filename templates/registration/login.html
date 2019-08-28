@@ -20,7 +20,7 @@
         {% endif %}
     {% endif %}
 
-    <form method="post" action="{% url 'login' %}">
+    <form method="post" action="{% url 'users:login' %}">
         {% csrf_token %}
         <div class="row gtr-50 gtr-uniform">
             <div class="col-12">
@@ -32,7 +32,7 @@
             <div class="col-12">
                 <ul class="actions special">
                     <li><input type="submit" value="Login" /></li>
-                    <li><a href="{% url 'password_change' %}" class="button alt">Forgot password?</a></li>
+                    <li><a href="{% url 'users:password_change' %}" class="button alt">Forgot password?</a></li>
                     <input type="hidden" name="next" value="{{ next }}" />
                 </ul>
             </div>
@@ -41,5 +41,5 @@
 
 
     {# Assumes you setup the password_reset view in your URLconf #}
-    <!-- <p><a href="{% url 'password_reset' %}">Forgot password?</a></p> -->
+    <!-- <p><a href="{% url 'users:password_reset' %}">Forgot password?</a></p> -->
 {% endblock %}

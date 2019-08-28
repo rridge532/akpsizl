@@ -25,8 +25,6 @@ urlpatterns = [
     path('rush/', include('rush.urls')),
     path('', include('base.urls')),
     path('accounts/', include('users.urls')),
-    path('accounts/password_change/', base_views.password_change, name='password_change'),
-    path('accounts/', include('django.contrib.auth.urls')),
 ]
 
 handler404 = base_views.handler404

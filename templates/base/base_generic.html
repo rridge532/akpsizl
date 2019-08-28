@@ -89,9 +89,9 @@
 										Hi, {{ request.user.username }}!
 									{% endif %}
 								</a></li>
-								<li><a href="{% url 'logout' %}?next={% url 'login' %}" class="button">Log Out</a></li>
+								<li><a href="{% url 'users:logout' %}?next={% url 'users:login' %}" class="button">Log Out</a></li>
 							{% else %}
-							<li><a href="{% url 'login' %}" class="button">Log In</a></li>
+							<li><a href="{% url 'users:login' %}" class="button">Log In</a></li>
 							{% endif %}
 						</ul>
 					</nav>
