@@ -189,3 +189,24 @@ def creditscsv(request):
     }
     response.write(template.render(context))
     return response
+
+def meetingscsv(request):
+    brothercredits = {}
+    activebrothers = User.objects.filter(profile__isbrother=1, profile__isloa=0, profile__isexec=0).all()
+    eventgroups = EventGroup.objects.filter(name='Brother Meeting').all()
+    for bro in activebrothers:
+        creditsdict = {}
+        for eventgroup in eventgroups:
+            creditsdict[eventgroup.name] = bro.eventgroupcredits(eventgroup)
+        brothercredits[bro] = creditsdict
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="meetingattendance_%s.csv"' % timezone.now().strftime('%m-%d-%y_%H%M%S')
+    
+    template = loader.get_template('attendance/creditscsv.txt')
+    context = {
+        'brothercredits': brothercredits,
+        'eventgroups': eventgroups,
+    }
+    response.write(template.render(context))
+    return response
