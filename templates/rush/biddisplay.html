@@ -7,9 +7,6 @@
 {% endblock %}
 
 {% block content %}
-    {% if bids|length < 1 %}
-    <h3>There are no bids</h3>
-    {% else %}
     <h3>Rushees that got a bid:</h3> 
     <h4>Number of Bids: {{ bids|length }}</h4>
 
@@ -46,5 +43,4 @@
     {% for nobid in nobids %}
     <p>{{ nobid.0.first_name }} {{ nobid.0.last_name}}: {{ nobid.1 }} out of {{ nobid.2 }}</p>
     {% endfor %}
-    {% endif %}
 {% endblock %}
