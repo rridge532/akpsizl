@@ -65,4 +65,7 @@
     {% else %}
     <h3>All brothers have their credits</h3>
     {% endif %}
+    <ul class="actions special">
+        <li><a href="{% url 'attendance:creditscsv' %}" class="button">Download Credits</a></li>
+    </ul>
 {% endblock %}

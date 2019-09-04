@@ -11,4 +11,5 @@ urlpatterns = [
     path('<int:eventid>/eventattendance/', views.eventattendance, name='eventattendance'),
     path('userattendance/', views.userattendance, name='userattendance'),
     path('brothercredits/', views.brothercredits, name='brothercredits'),
+    path('brothercredits/csv', views.creditscsv, name='creditscsv'),
 ]

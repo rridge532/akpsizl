@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.utils.decorators import method_decorator
+from django.template import Context, loader
 from django.urls import reverse
 from datetime import datetime
 from django.utils import timezone
@@ -166,3 +167,25 @@ def events(request):
         'eventgroups': eventgroups,
     }
     return render(request, 'attendance/events.html', context=context)
+
+def creditscsv(request):
+    brothercredits = {}
+    activebrothers = User.objects.filter(profile__isbrother=1, profile__isloa=0, profile__isexec=0).all()
+    eventgroups = EventGroup.objects.filter(needed_credits__gt=0).all() | EventGroup.objects.filter(senior_credits__gt=0).all()
+    for bro in activebrothers:
+        creditsdict = {}
+        for eventgroup in eventgroups:
+            creditsdict[eventgroup.name] = bro.eventgroupcredits(eventgroup)
+        creditsdict['Total'] = bro.totalcredits
+        brothercredits[bro] = creditsdict
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="brothercredits_%s.csv"' % timezone.now().strftime('%m-%d-%y_%H%M%S')
+    
+    template = loader.get_template('attendance/creditscsv.txt')
+    context = {
+        'brothercredits': brothercredits,
+        'eventgroups': eventgroups,
+    }
+    response.write(template.render(context))
+    return response
