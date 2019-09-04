@@ -152,13 +152,11 @@ def interview(request):
             if request.method == 'POST':
                 form = InterviewForm(request.POST)
                 if form.is_valid():
+                    oldinterview = Interview.objects.filter(interviewer=request.user, rushee=form.cleaned_data['rushee']).first()
+                    form = InterviewForm(request.POST or None, instance=oldinterview)
                     newinterview = form.save(commit=False)
-                    oldinterview = Interview.objects.filter(interviewer=request.user, rushee=newinterview.rushee)
-                    if oldinterview:
-                        form = InterviewForm(request.POST, instance=oldinterview)
-                        newinterview = form.save(commit=False)
                     newinterview.interviewer = request.user
-                    newinterview.save
+                    newinterview.save()
                     message = "Your interview with %s has been recorded." % (form.cleaned_data['rushee'])
                     interview = ('New Interview', '/rush/interview')
                     home = ('Rush', '/rush')
