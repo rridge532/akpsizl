@@ -1,0 +1,44 @@
+{% extends 'base/base_generic.html' %}
+
+{% block banner %} {% endblock %}
+
+{% block main_headertext %}
+<h2>Interview Stats</h2>
+{% endblock %}
+
+{% block content %}
+
+    <p>Total number of interviews: {{ num }}</p>
+    <br />
+        
+    <h4>Mean</h4>
+    <ul class="actions special">
+    {% for trait, stats in traits.items %}
+        <li>{{ trait | title }}: {{ stats.mean }}</li>
+    {% endfor %}
+    </ul>
+    <h4>Standard Deviation</h4>
+    <ul class="actions special">
+    {% for trait, stats in traits.items %}
+        <li>{{ trait | title }}: {{ stats.stdev }}</li>
+    {% endfor %}
+    </ul>
+    <h4>Maximum</h4>
+    <ul class="actions special">
+    {% for trait, stats in traits.items %}
+        <li>{{ trait | title }}: {{ stats.maximum }}</li>
+    {% endfor %}
+    </ul>
+    <h4>Minimum</h4>
+    <ul class="actions special">
+    {% for trait, stats in traits.items %}
+        <li>{{ trait | title }}: {{ stats.minimum }}</li>
+    {% endfor %}
+    </ul>
+    <h4>Median</h4>
+    <ul class="actions special">
+    {% for trait, stats in traits.items %}
+        <li>{{ trait | title }}: {{ stats.median }}</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

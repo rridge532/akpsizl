@@ -8,7 +8,7 @@ from django.db.models import Avg
 from datetime import datetime
 from django.utils import timezone, http
 from django.core.cache import cache
-import statistics
+from statistics import stdev, mean, median
 import qrcode
 
 from users.models import Profile, brother_check, exec_check
@@ -153,7 +153,7 @@ def interview(request):
                 form = InterviewForm(request.POST)
                 if form.is_valid():
                     newinterview = form.save(commit=False)
-                    oldinterview = Interview.objects.get(interviewer=request.user, rushee=newinterview.rushee)
+                    oldinterview = Interview.objects.filter(interviewer=request.user, rushee=newinterview.rushee)
                     if oldinterview:
                         form = InterviewForm(request.POST, instance=oldinterview)
                         newinterview = form.save(commit=False)
@@ -409,38 +409,48 @@ def powerpoint(request, page = 1):
     }
     return render(request, 'base/error.html', context=context)
 
+def get_statistics(items):
+    if len(items) < 2:
+        return "N/A"
+    stats = {}
+    stats['sum'] = sum(items)
+    stats['mean'] = round(mean(items), 2)
+    stats['maximum'] = max(items)
+    stats['minimum'] = min(items)
+    stats['stdev'] = round(stdev(items), 2)
+    stats['median'] = round(median(items), 2)
+    return stats
 
 
-"""
 @login_required
 @user_passes_test(exec_check, redirect_field_name=None)
 def interviewstats(request):
     num = Interview.objects.count()
     interviews = Interview.objects.all()
 
-    if(num == 0):
-        return HttpResponse("No scores")
-    
-    # sums
-    suminterest = sum(interview.interest for interview in Interview.objects.iterator())
-    sumenergy = sum(interview.energy for interview in Interview.objects.iterator())
-    sumfriend = sum(interview.friendliness for interview in Interview.objects.iterator())
+    if num < 2:
+        return HttpResponse("Not enough scores")
+    interest = { interview.interest for interview in interviews }
+    energy = { interview.energy for interview in interviews }
+    friendliness = { interview.friendliness for interview in interviews }
 
-    # averages
-    avginterest = suminterest / num
-    avgenergy = sumenergy / num
-    avgfriend = sumfriend / num
-    
-    # maximums
-    maxinterest = max(interviews, key = lambda x: x.interest)
-    maxenergy = max(interviews, key = lambda x: x.energy)
-    maxfriend = max(interviews, key = lambda x: x.friendliness)
-    
-    # minimums
-    mininterest = min(interviews, key = lambda x: x.interest)
-    minenergy = min(interviews, key = lambda x: x.energy)
-    minfriend = min(interviews, key = lambda x: x.friendliness)
-"""
+    intereststats = get_statistics(interest)
+    energystats = get_statistics(energy)
+    friendlinessstats = get_statistics(friendliness)
+
+    traits = {
+        'interest': intereststats,
+        'energy': energystats,
+        'friendliness': friendlinessstats,
+    }
+
+    context = {
+        'num': num,
+        'traits': traits,
+    }
+
+    return render(request, 'rush/interviewstats.html', context)
+
 @login_required
 @user_passes_test(exec_check, redirect_field_name=None)
 def biddisplay(request):
