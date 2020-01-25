@@ -9,4 +9,3 @@ local_settings.pyc
 migrations/
 data/certbot/
 staticfiles/rusheepics/
-akpsi/settings.py
