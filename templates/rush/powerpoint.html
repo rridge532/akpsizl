@@ -17,7 +17,7 @@
         <h2 style="text-align: center"> {{ rushee.first_name }} {{rushee.last_name }} - ({{ rushee.username }}) # {{ page.number }} of {{ page.paginator.num_pages }} </h2>
         <div class="row">
             <div class="col-6" style="max-height:80vh">
-                <img src="{% static url %}/rusheepics/{{ rushee.username }}.JPG" style="max-width:99%;max-height:80vh">
+                <img src="{% static url %}rusheepics/{{ rushee.username }}.JPG" style="max-width:99%;max-height:80vh;transform:-webkit-transform:rotate(90deg);">
             </div>
             <div class="col-6" style="max-height:80vh">
                 <h4> <strong>MAJOR:</strong> {{ application.major }}</h4>

@@ -7,3 +7,5 @@ __pycache__/
 local_settings.pyc
 *.sqlite3
 migrations/
+data/certbot/
+staticfiles/rusheepics/
