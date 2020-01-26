@@ -89,8 +89,9 @@ class Signin(models.Model):
         if self.signouttime:
             if self.signouttime < self.signintime:
                 raise ValidationError('Sign-out time must be after sign-in time.', code='invalid_signout')
-            if self.event.duration > self.signouttime - self.signintime:
-                raise ValidationError('Attendance duration cannot be less than required event duration of %(value)s', params={'value': self.event.duration})
+            if self.event.duration:
+                if self.event.duration > self.signouttime - self.signintime:
+                    raise ValidationError('Attendance duration cannot be less than required event duration of %(value)s', params={'value': self.event.duration})
 
     def attendance_duration(self):
         if self.signouttime and self.signintime:
