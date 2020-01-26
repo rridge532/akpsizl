@@ -101,9 +101,9 @@ class Signin(models.Model):
 
 # Define extra user attributes to make views easier
 class UserFunctions:
-    # def __init__(self):
-    #     self.signins = Signin.objects.filter(user=self)
-    #     self.totalcredits = sum(signin.event.credits for signin in self.signins)
+    def __init__(self):
+        self.signins = Signin.objects.filter(user=self)
+        self.totalcredits = sum(signin.event.credits for signin in self.signins)
 
     # def get_activebrother(self):
     #     if self.profile.isbrother and not self.profile.isloa and not self.profile.isexec:
