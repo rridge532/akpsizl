@@ -10,19 +10,13 @@
 {% block content %}
     <ul class="actions special">
         <li><a href="/attendance/events" class="button alt">Event List</a></li>
-        <li><a href="/attendance/{{ event.id }}/qrcode" class="button">QR Code</a></li>
-        <li><a href="/attendance/{{ event.id }}/signinqr" class="button">Signin QR</a></li>
+        <li><a href="/attendance/{{ event.id }}/sign-in/qr" class="button">Sign-in QR</a></li>
     </ul>
 
     {% if signincount < 1 %}
     <h3>There are no attendees</h3>>
     {% else %}
-    <h3>Attendance: {{ signincount }}</h3>
-    <!-- <ol style="text-align:left;">
-    {% for attendee in attendees %}
-        <li>{{ attendee.user.first_name }} {{ attendee.user.last_name }}</li>
-    {% endfor %}
-    </ol> -->
+    <h3>Attendance: {{ signins.count }}</h3>
 
     <div class="table-wrapper" style="text-align:left;">
         <table>
@@ -30,7 +24,7 @@
                 <tr>
                     <th style="width: 15%">First Name</th>
                     <th style="width: 15%">Last Name</th>
-                    <th style="width: 60%">Signin Time</th>
+                    <th style="width: 60%">Sign-in Time</th>
                 </tr>
             </thead>
             <tbody>
@@ -38,7 +32,7 @@
                 <tr>
                     <td>{{ signin.user.first_name }}</td>
                     <td>{{ signin.user.last_name }}</td>
-                    <td>{{ signin.time }}</td>
+                    <td>{{ signin.signintime }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

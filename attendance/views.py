@@ -18,10 +18,15 @@ from users.models import Profile, brother_check, exec_check
 # Helper functions
 
 # From qrcodeimage and getqrimage with removal of signout
-def qrcodeimage(request, eventid):
+def qrcodeimage(request, eventid, inorout):
+    if not inorout == 'sign-in':
+        raise Exception('QR code is malformed. Must be sign-in.')
     event = get_object_or_404(Event, id=eventid)
-    address = 'https://akpsizl.com/attendance/{}/{}/signin'.format(event.id, event.slug)
-    img = qrcode.make(address)
+    address = 'https://akpsizl.com/attendance/{}/{}/{}/api'.format(event.id, event.slug, inorout)
+    qr = qrcode.QRCode()
+    qr.add_data(address)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="#2D68C4", back_color="#FFD700")
     response = HttpResponse(content_type="image/png")
     img.save(response, "PNG")
     return response
@@ -37,15 +42,20 @@ def get_prettydatetime(datetimeobj=''):
 # Take event id and display the signin qrcode for that event
 @login_required
 @user_passes_test(brother_check, redirect_field_name=None)
-def signinqr(request, eventid):
+def signinqr(request, eventid, inorout):
     event = get_object_or_404(Event, id=eventid)
     if request.user.memberofgroup(event.group) or request.user.profile.isexec:
-        signincount = Signin.objects.filter(event=event).count()
-        recentsignin = Signin.objects.filter(event=event).order_by('-time')[:5][::-1]
+        signins = Signin.objects.filter(event=event)
+        attendancecount = signins.count()
+        if inorout == 'sign-in':
+            recent = signins.order_by('-signintime')[:5][::-1]
+        else:
+            return HttpResponseRedirect(reverse('attendance:eventattendance', args=(eventid,)))
         context = {
             'event': event,
-            'signincount': signincount,
-            'recentsignin': recentsignin,
+            'attendancecount': attendancecount,
+            'recent': recent,
+            'inorout': inorout,
         }
     else:
         raise Exception('Not so fast')
@@ -55,32 +65,39 @@ def signinqr(request, eventid):
 # Takes event and user info to create a signin with basic manual signin prevention
 @login_required
 @user_passes_test(brother_check, redirect_field_name=None)
-def signinapi(request, eventid, eventslug):
-    user = request.user
+def signinapi(request, eventid, eventslug, inorout):
     event = get_object_or_404(Event, id=eventid)
     # Check the slug to prevent manual typing of the URL
     if event.slug == eventslug:
-        signin, created = Signin.objects.get_or_create(user=user, event=event)
+        signin, created = Signin.objects.get_or_create(user=request.user, event=event)
         # Only try to save the signin if it is newly created
-        if created:
-            signin.save()
+        if inorout == 'sign-in':
+            if created:
+                signin.save()
+        else:
+            raise Exception('Only sign-in is allowed.')
     # Slug doesn't match, possibly somebody faking a signin, raise an exception
     else:
         raise Exception('Not so fast')
-    return HttpResponseRedirect(reverse('attendance:signinsuccess', args=(eventid,)))
+    return HttpResponseRedirect(reverse('attendance:success', args=(eventid,inorout)))
 
 # Adapted from thank
 # Returns signinsuccess if signin exists for that user for that event. Throws an error otherwise.
 @login_required
 @user_passes_test(brother_check, redirect_field_name=None)
-def signinsuccess(request, eventid):
-    user = request.user
-    event = Event.objects.get(id=eventid)
-    signin = get_object_or_404(Signin, user=user, event=event)
+def success(request, eventid, inorout):
+    event = get_object_or_404(Event, id=eventid)
+    signin = get_object_or_404(Signin, user=request.user, event=event)
+    if inorout == 'sign-in':
+        time = signin.signintime
+    else:
+        return HttpResponseRedirect(reverse('attendance:userattendance'))
     context = {
         'signin': signin,
+        'inorout': inorout,
+        'time': time,
     }
-    return render(request, 'attendance/signinsuccess.html', context=context)
+    return render(request, 'attendance/success.html', context=context)
 
 # Adapted from getsimpleattendance
 @login_required
@@ -88,11 +105,9 @@ def signinsuccess(request, eventid):
 def eventattendance(request, eventid):
     event = get_object_or_404(Event, id=eventid)
     if request.user.memberofgroup(event.group) or request.user.profile.isexec:
-        signincount = Signin.objects.filter(event=event).count()
         signins = Signin.objects.filter(event=event).order_by('user__last_name')
         context = {
             'event': event,
-            'signincount': signincount,
             'signins': signins,
             'containersize': 'medium',
         }
