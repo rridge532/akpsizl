@@ -48,7 +48,7 @@ def signinqr(request, eventid, inorout):
         signins = Signin.objects.filter(event=event)
         attendancecount = signins.count()
         if inorout == 'sign-in':
-            recent = signins.order_by('-signintime')[:5][::-1]
+            recent = signins.order_by('-time')[:5][::-1]
         else:
             return HttpResponseRedirect(reverse('attendance:eventattendance', args=(eventid,)))
         context = {
@@ -89,7 +89,7 @@ def success(request, eventid, inorout):
     event = get_object_or_404(Event, id=eventid)
     signin = get_object_or_404(Signin, user=request.user, event=event)
     if inorout == 'sign-in':
-        time = signin.signintime
+        time = signin.time
     else:
         return HttpResponseRedirect(reverse('attendance:userattendance'))
     context = {
