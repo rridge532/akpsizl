@@ -9,6 +9,7 @@
 
 {% block content %}
     <h2>Attendance: {{ attendancecount }}</h2>
+    <h3>Sign-ins: {{ signincount }} - Sign-outs: {{ signoutcount }}</h3>
     <h3 style="text-align:left;">Most Recent: </h3>
     <ol style="text-align:left">
     {% for signin in recent %}

@@ -19,8 +19,8 @@ from users.models import Profile, brother_check, exec_check
 
 # From qrcodeimage and getqrimage with removal of signout
 def qrcodeimage(request, eventid, inorout):
-    if not inorout == 'sign-in':
-        raise Exception('QR code is malformed. Must be sign-in.')
+    if not inorout == 'sign-in' and not inorout == 'sign-out':
+        raise Exception('QR code is malformed. Must be sign-in or sign-out')
     event = get_object_or_404(Event, id=eventid)
     address = 'https://akpsizl.com/attendance/{}/{}/{}/api'.format(event.id, event.slug, inorout)
     qr = qrcode.QRCode()
@@ -46,14 +46,19 @@ def signinqr(request, eventid, inorout):
     event = get_object_or_404(Event, id=eventid)
     if request.user.memberofgroup(event.group) or request.user.profile.isexec:
         signins = Signin.objects.filter(event=event)
-        attendancecount = signins.count()
+        signouts = signins.filter(signouttime__isnull=False)
+        attendancecount = signins.count() - signouts.count()
         if inorout == 'sign-in':
-            recent = signins.order_by('-time')[:5][::-1]
+            recent = signins.order_by('-signintime')[:5][::-1]
+        elif inorout == 'sign-out':
+            recent = signouts.order_by('-signouttime')[:5][::-1]
         else:
             return HttpResponseRedirect(reverse('attendance:eventattendance', args=(eventid,)))
         context = {
             'event': event,
             'attendancecount': attendancecount,
+            'signincount': signins.count,
+            'signoutcount': signouts.count,
             'recent': recent,
             'inorout': inorout,
         }
@@ -74,8 +79,15 @@ def signinapi(request, eventid, eventslug, inorout):
         if inorout == 'sign-in':
             if created:
                 signin.save()
+        elif inorout == 'sign-out':
+            if not created:
+                if not signin.signouttime:
+                    signin.signouttime = datetime.now()
+                    signin.save()
+            else:
+                raise Exception('You must sign in first.')
         else:
-            raise Exception('Only sign-in is allowed.')
+            raise Exception('Only sign-in or sign-out are allowed.')
     # Slug doesn't match, possibly somebody faking a signin, raise an exception
     else:
         raise Exception('Not so fast')
@@ -89,7 +101,9 @@ def success(request, eventid, inorout):
     event = get_object_or_404(Event, id=eventid)
     signin = get_object_or_404(Signin, user=request.user, event=event)
     if inorout == 'sign-in':
-        time = signin.time
+        time = signin.signintime
+    elif inorout == 'sign-out':
+        time = signin.signouttime
     else:
         return HttpResponseRedirect(reverse('attendance:userattendance'))
     context = {

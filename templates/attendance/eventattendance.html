@@ -11,6 +11,7 @@
     <ul class="actions special">
         <li><a href="/attendance/events" class="button alt">Event List</a></li>
         <li><a href="/attendance/{{ event.id }}/sign-in/qr" class="button">Sign-in QR</a></li>
+        <li><a href="/attendance/{{ event.id }}/sign-out/qr" class="button">Sign-out QR</a></li>
     </ul>
 
     {% if signincount < 1 %}
@@ -24,7 +25,8 @@
                 <tr>
                     <th style="width: 15%">First Name</th>
                     <th style="width: 15%">Last Name</th>
-                    <th style="width: 60%">Sign-in Time</th>
+                    <th style="width: 35%">Sign-in Time</th>
+                    <th style="width: 35%">Sign-out Time</th>
                 </tr>
             </thead>
             <tbody>
@@ -32,7 +34,8 @@
                 <tr>
                     <td>{{ signin.user.first_name }}</td>
                     <td>{{ signin.user.last_name }}</td>
-                    <td>{{ signin.time }}</td>
+                    <td>{{ signin.signintime }}</td>
+                    <td>{{ signin.signouttime }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -1,6 +1,7 @@
 from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
@@ -55,6 +56,7 @@ class Event(models.Model):
     name = models.CharField(max_length=100, null=False)
     group = models.ForeignKey(EventGroup, on_delete=models.SET_NULL, null=True)
     credits = models.IntegerField(default=1, null=False)
+    duration = models.DurationField(null=True, blank=True)
     date = models.DateField(default=datetime.now)
     slug = models.CharField(max_length=32, default='', null=True, blank=True)
 
@@ -76,24 +78,32 @@ def generate_random_slug(sender, instance, created, **kwargs):
 class Signin(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    time = models.DateTimeField(default=datetime.now, null=True, blank=True)
+    signintime = models.DateTimeField(default=datetime.now, null=True, blank=True)
+    signouttime = models.DateTimeField(null=True, blank=True)
     comment = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return str(self.user) + ' signed in to ' + str(self.event)
-    #    if self.signin:
-    #        return str(self.user) + ' signed in to ' + str(self.event) + ' at ' + str(self.time)
-    #    else:
-    #        return str(self.user) + ' signed out of ' + str(self.event) + ' at ' + str(self.time)
+    
+    def clean(self):
+        if self.signouttime:
+            if self.signouttime < self.signintime:
+                raise ValidationError('Sign-out time must be after sign-in time.', code='invalid_signout')
+            if self.event.duration > self.signouttime - self.signintime:
+                raise ValidationError('Attendance duration cannot be less than required event duration of %(value)s', params={'value': self.event.duration})
 
+    def attendance_duration(self):
+        if self.signouttime and self.signintime:
+            return self.signouttime - self.signintime
+            
     class Meta:
         unique_together = ('event', 'user')
 
 # Define extra user attributes to make views easier
 class UserFunctions:
-    def __init__(self):
-        self.signins = Signin.objects.filter(user=self)
-        self.totalcredits = sum(signin.event.credits for signin in self.signins)
+    # def __init__(self):
+    #     self.signins = Signin.objects.filter(user=self)
+    #     self.totalcredits = sum(signin.event.credits for signin in self.signins)
 
     # def get_activebrother(self):
     #     if self.profile.isbrother and not self.profile.isloa and not self.profile.isexec:

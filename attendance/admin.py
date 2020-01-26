@@ -36,8 +36,8 @@ class EventAdmin(admin.ModelAdmin):
     # inlines = [SigninInline]
 
 class SigninAdmin(admin.ModelAdmin):
-    list_display = ['event', 'user', 'time']
-    ordering = ['-time', 'event', 'user']
+    list_display = ['event', 'user', 'signintime', 'signouttime', 'attendance_duration']
+    ordering = ['-signintime', 'event', 'user']
     list_filter = ['event','user']
 
 admin.site.register(EventGroup, EventGroupAdmin)
