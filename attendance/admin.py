@@ -10,11 +10,12 @@ class EventInline(admin.TabularInline):
     exclude = ['slug']
     ordering = ['-date']
 
-class SigninInline(admin.TabularInline):
-    model = Signin
-    extra = 0
-    exclude = ['comment']
-    classes = ['collapse']
+# class SigninInline(admin.TabularInline):
+#     model = Signin
+#     readonly_fields = ['user', 'signintime', 'signouttime']
+#     extra = 0
+#     exclude = ['comment']
+#     classes = ['collapse']
 
 class EventGroupAdmin(admin.ModelAdmin):
     fieldsets = [
@@ -32,7 +33,7 @@ class EventAdmin(admin.ModelAdmin):
     list_filter = ['group']
     readonly_fields = ['slug']
     search_fields = ['name']
-    inlines = [SigninInline]
+    # inlines = [SigninInline]
 
 class SigninAdmin(admin.ModelAdmin):
     list_display = ['event', 'user', 'time']
