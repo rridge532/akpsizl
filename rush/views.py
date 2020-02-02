@@ -32,7 +32,8 @@ def rushee_check(user):
 
 def qrcodeimage(request, nightid):
     night = get_object_or_404(RushNight, id=nightid)
-    address = 'https://akpsirush.com/rush/{}/rusheesignin'.format(night.id)
+    # address = 'https://akpsirush.com/rush/{}/rusheesignin'.format(night.id)
+    address = request.build_absolute_uri(reverse('rush:rusheesignin', args=(night.id,)))
     img = qrcode.make(address)
     response = HttpResponse(content_type="image/png")
     img.save(response, "PNG")
