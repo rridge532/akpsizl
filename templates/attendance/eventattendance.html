@@ -9,9 +9,9 @@
 
 {% block content %}
     <ul class="actions special">
-        <li><a href="/attendance/events" class="button alt">Event List</a></li>
-        <li><a href="/attendance/{{ event.id }}/sign-in/qr" class="button">Sign-in QR</a></li>
-        <li><a href="/attendance/{{ event.id }}/sign-out/qr" class="button">Sign-out QR</a></li>
+        <li><a href="{% url 'attendance:events' %}" class="button alt">Event List</a></li>
+        <li><a href="{% url 'attendance:signinqr' eventid=event.id inorout='sign-in' %}" class="button">Sign-in QR</a></li>
+        <li><a href="{% url 'attendance:signinqr' eventid=event.id inorout='sign-out' %}" class="button">Sign-out QR</a></li>
     </ul>
 
     {% if signincount < 1 %}
