@@ -61,7 +61,8 @@ def signup(request):
 
 @login_required
 def signupqr(request):
-    address = "https://akpsizl.com/%s" % reverse('users:signup')
+    # address = "https://akpsizl.com/%s" % reverse('users:signup')
+    address = request.build_absolute_uri(reverse('users:signup'))
     img = qrcode.make(address)
     response = HttpResponse(content_type="image/png")
     img.save(response, "PNG")
