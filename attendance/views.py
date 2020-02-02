@@ -22,7 +22,7 @@ def qrcodeimage(request, eventid, inorout):
     if not inorout == 'sign-in' and not inorout == 'sign-out':
         raise Exception('QR code is malformed. Must be sign-in or sign-out')
     event = get_object_or_404(Event, id=eventid)
-    address = reverse('attendance:signinapi', args=(event.id, event.slug, inorout))
+    address = request.build_absolute_uri(reverse('attendance:signinapi', args=(event.id, event.slug, inorout)))
     # oldaddress = 'https://akpsizl.com/attendance/{}/{}/{}/api'.format(event.id, event.slug, inorout)
     qr = qrcode.QRCode()
     qr.add_data(address)

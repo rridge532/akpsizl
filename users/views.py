@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.urls import reverse
 import qrcode
 
 from .forms import EditProfileForm, BrotherSignupForm, SignupTokenForm
@@ -60,7 +61,7 @@ def signup(request):
 
 @login_required
 def signupqr(request):
-    address = 'https://akpsizl.com/accounts/signup'
+    address = request.build_absolute_uri(reverse('users:signup'))
     img = qrcode.make(address)
     response = HttpResponse(content_type="image/png")
     img.save(response, "PNG")
