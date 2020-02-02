@@ -57,7 +57,7 @@ class Event(models.Model):
     group = models.ForeignKey(EventGroup, on_delete=models.SET_NULL, null=True)
     credits = models.IntegerField(default=1, null=False)
     duration = models.DurationField(null=True, blank=True)
-    date = models.DateField(default=datetime.now)
+    date = models.DateField(default=timezone.now)
     slug = models.CharField(max_length=32, default='', null=True, blank=True)
 
     def __str__(self):
@@ -78,8 +78,8 @@ def generate_random_slug(sender, instance, created, **kwargs):
 class Signin(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    signintime = models.DateTimeField(default=datetime.now, null=True, blank=True)
-    signouttime = models.DateTimeField(null=True, blank=True)
+    signintime = models.DateTimeField('signin-in time', default=timezone.now, null=True, blank=True)
+    signouttime = models.DateTimeField('sign-out time', null=True, blank=True)
     comment = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
