@@ -52,6 +52,9 @@ class RushNight(models.Model):
     def __str__(self):
         return str(self.night) + ': ' + self.name
 
+    class Meta:
+        ordering = ['night']
+
 class RusheeSignin(models.Model):
     rushee = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'profile__isbrother': False})
     night = models.ForeignKey(RushNight, on_delete=models.CASCADE)
