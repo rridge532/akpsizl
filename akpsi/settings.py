@@ -26,6 +26,7 @@ SECRET_KEY = '5d1flay9h45y!!0d1ixfjq5m^kh3x#$xotd70@m8xiuf=t#f0y'
 DEBUG = False
 
 USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_HOSTS = ['localhost','192.168.99.100','*']
 
 # SESSION_EXPIRE_AT_BROWSER_CLOSE = False
