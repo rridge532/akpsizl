@@ -1,4 +1,5 @@
 from django.contrib import admin
+from base.admin import admin_site
 from base import filters
 from .models import EventGroup, Event, Signin, TeamMembership
 
@@ -66,7 +67,7 @@ class SigninAdmin(admin.ModelAdmin):
     readonly_fields = ['attendance_duration']
     search_fields = ['event__name','user__username','user__first_name','user__last_name']
 
-admin.site.register(EventGroup, EventGroupAdmin)
-admin.site.register(Event, EventAdmin)
-admin.site.register(Signin, SigninAdmin)
-admin.site.register(TeamMembership)
+admin_site.register(EventGroup, EventGroupAdmin)
+admin_site.register(Event, EventAdmin)
+admin_site.register(Signin, SigninAdmin)
+admin_site.register(TeamMembership)

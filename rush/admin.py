@@ -1,4 +1,5 @@
 from django.contrib import admin
+from base.admin import admin_site
 from base import filters
 from .models import RushNight, RusheeSignin, Interview, Application, Mention, Vote
 # Register your models here.
@@ -68,9 +69,9 @@ class ApplicationAdmin(admin.ModelAdmin):
     get_attendance.short_description = 'Nights Attended'
 
 
-admin.site.register(RushNight)
-admin.site.register(RusheeSignin)
-admin.site.register(Interview)
-admin.site.register(Application, ApplicationAdmin)
-admin.site.register(Mention)
-admin.site.register(Vote)
+admin_site.register(RushNight)
+admin_site.register(RusheeSignin)
+admin_site.register(Interview)
+admin_site.register(Application, ApplicationAdmin)
+admin_site.register(Mention)
+admin_site.register(Vote)

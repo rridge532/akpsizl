@@ -1,6 +1,7 @@
 from django.contrib import admin
+from base.admin import admin_site
 from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User,Group
 
 from .models import Profile, SignupToken
 
@@ -20,6 +21,6 @@ class CustomUserAdmin(UserAdmin):
             return list()
         return super(CustomUserAdmin, self).get_inline_instances(request, obj)
 
-admin.site.unregister(User)
-admin.site.register(User, CustomUserAdmin)
-admin.site.register(SignupToken)
+admin_site.register(Group)
+admin_site.register(User, CustomUserAdmin)
+admin_site.register(SignupToken)
