@@ -49,26 +49,6 @@ class Race(models.Model):
     class Meta:
         ordering = ['race']
 
-# GENDER_CHOICES = [
-#     (1, 'Man'),
-#     (2, 'Woman'),
-#     (3, 'Non-binary'),
-#     (4, 'Other (please specify)'),
-#     (5, 'Prefer not to say'),
-# ]
-
-# RACE_CHOICES = [
-#     (1, 'American Indian / Alaska Native'),
-#     (3, 'Black / African Descent'),
-#     (3, 'East Asian'),
-#     (3, 'Hispanic / Latino'),
-#     (3, 'Middle Eastern'),
-#     (4, 'Native Hawaiian / Pacific Islander'),
-#     (3, 'South Asian'),
-#     (5, 'White'),
-#     (6, 'Prefer not to say'),
-# ]
-
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     preferred_name = models.CharField(max_length=50, null=True)
