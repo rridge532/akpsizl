@@ -13,7 +13,7 @@
     <h3 style="text-align:left;">Most Recent: </h3>
     <ol style="text-align:left">
     {% for signin in recent %}
-        <li>{{ signin.user.first_name }} {{ signin.user.last_name }}</li>
+        <li>{{ signin.user.get_full_name }}</li>
     {% endfor %}
     </ol>
 {% endblock %}

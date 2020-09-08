@@ -1,3 +1,3 @@
 "First Name", "Last Name", {% for evg in eventgroups %} "{{ evg|addslashes }} ({{ evg.needed_credits|addslashes }})", {% endfor %} "Total"
-{% for bro, credits in brothercredits.items %} "{{ bro.first_name|addslashes }}", "{{ bro.last_name|addslashes }}", {% for evgcredits in credits.values %} "{{ evgcredits|addslashes }}",{% endfor %}
+{% for bro, credits in brothercredits.items %} "{{ bro.get_short_name|addslashes }}", "{{ bro.last_name|addslashes }}", {% for evgcredits in credits.values %} "{{ evgcredits|addslashes }}",{% endfor %}
 {% endfor %}

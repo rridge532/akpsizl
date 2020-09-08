@@ -32,7 +32,7 @@
             <tbody>
                 {% for signin in signins %}
                 <tr>
-                    <td>{{ signin.user.first_name }}</td>
+                    <td>{{ signin.user.get_short_name }}</td>
                     <td>{{ signin.user.last_name }}</td>
                     <td>{{ signin.signintime }}</td>
                     <td>{{ signin.signouttime }}</td>

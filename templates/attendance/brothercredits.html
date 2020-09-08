@@ -25,7 +25,7 @@
             <tbody>
                 {% for bro, credits in notcredits.items %}
                 <tr>
-                    <td>{{ bro.first_name }}</td>
+                    <td>{{ bro.get_short_name }}</td>
                     <td>{{ bro.last_name }}</td>
                     {% for evgcredits in credits.values %}
                         <td style="text-align:right;">{{ evgcredits }}</td>
@@ -52,7 +52,7 @@
                 <tbody>
                     {% for bro, credits in hascredits.items %}
                     <tr>
-                        <td>{{ bro.first_name }}</td>
+                        <td>{{ bro.get_short_name }}</td>
                         <td>{{ bro.last_name }}</td>
                         {% for evgcredits in credits.values %}
                             <td style="text-align:right;">{{ evgcredits }}</td>

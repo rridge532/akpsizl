@@ -9,7 +9,7 @@
             <h4># {{ page.number }} of {{ page.paginator.num_pages }}</h4>
         </header>
         <div class="box special" style="text-align: left;">
-            <h3>About {{ application.rushee.first_name }}</h3>
+            <h3>About {{ application.rushee.get_short_name }}</h3>
             <p>{{ application.aboutme }}</p>
             <hr/>
         

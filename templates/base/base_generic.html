@@ -87,7 +87,7 @@
 							</li>
 								<li><a href="{% url 'attendance:userattendance' %}">
 									{% if request.user.first_name %}
-										Hi, {{ request.user.first_name }}!
+										Hi, {{ request.user.get_short_name }}!
 									{% else %}
 										Hi, {{ request.user.username }}!
 									{% endif %}
@@ -149,6 +149,28 @@
 			<script src="{% static 'assets/js/breakpoints.min.js' %}"></script>
 			<script src="{% static 'assets/js/util.js' %}"></script>
 			<script src="{% static 'assets/js/main.js' %}"></script>
+			
+			{% block script %}
 
+			<script type="text/javascript">
+			function showEditPopup(url) {
+				var win = window.open(url, "Edit", 
+					'height=500,width=800,resizable=yes,scrollbars=yes');
+				return false;
+			}
+			function showAddPopup(triggeringLink) {
+				var name = triggeringLink.id.replace(/^add_/, '');
+				href = triggeringLink.href;
+				var win = window.open(href, name, 'height=500,width=800,resizable=yes,scrollbars=yes');
+				win.focus();
+				return false;
+			}
+			function closePopup(win, newID, newRepr, id) {
+				$(id).append('<option value=' + newID + ' selected >' + newRepr + '</option>')
+				win.close();
+			}
+			
+			</script>
+			{% endblock %}
 	</body>
 </html>

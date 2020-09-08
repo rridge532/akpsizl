@@ -7,6 +7,6 @@
 {% endblock %}
 
 {% block content %}
-    <h2>Thank you, {{ signin.user.first_name }}!</h2>
+    <h2>Thank you, {{ signin.user.get_short_name }}!</h2>
     <p>Your {{ inorout }} at {{ signin.event.name }} has been recorded on {{ time }}.</p><br>
 {% endblock %}

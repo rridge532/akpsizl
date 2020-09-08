@@ -1,0 +1,23 @@
+{% extends 'base/base_generic.html' %}
+
+{% block banner %} {% endblock %}
+
+{% block main_headertext %}
+    <h2>Add {{ title }}</h2>
+{% endblock %}
+
+{% block content %}
+    <form method='POST' action='' enctype="multipart/form-data" novalidate id="book-form">
+        {% csrf_token %}
+        <div class="row gtr-50 gtr-uniform">
+            <div class="col-12">
+                {{ form.as_p }}
+            </div>
+            <div class="col-12">
+                <ul class="actions special">
+                    <li><input type="submit" value="Save" /></li>
+                </ul>
+            </div>    
+        </div>
+    </form>
+{% endblock %}

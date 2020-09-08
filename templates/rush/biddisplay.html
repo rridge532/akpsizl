@@ -26,7 +26,7 @@
             <tbody>
                 {% for bid in bids %}
                 <tr>
-                    <td>{{ bid.0.first_name }}</td>
+                    <td>{{ bid.0.get_short_name }}</td>
                     <td>{{ bid.0.last_name }}</td>
                     <td>{{ bid.0.application.address }}</td>
                     <td>{{ bid.0.email }}</td>
@@ -41,6 +41,6 @@
     <hr/>
     <h3>Rushees that didn't get a bid ({{ nobids|length }}):</h3>
     {% for nobid in nobids %}
-    <p>{{ nobid.0.first_name }} {{ nobid.0.last_name}}: {{ nobid.1 }} out of {{ nobid.2 }}</p>
+    <p>{{ nobid.0.get_short_name }} {{ nobid.0.last_name}}: {{ nobid.1 }} out of {{ nobid.2 }}</p>
     {% endfor %}
 {% endblock %}

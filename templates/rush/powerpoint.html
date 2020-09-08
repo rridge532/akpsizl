@@ -14,7 +14,7 @@
 		<link rel="icon" href="{% static 'images/zllogo.png' %}">
 	</head>
     <body>
-        <h2 style="text-align: center"> {{ rushee.first_name }} {{rushee.last_name }} - ({{ rushee.username }}) # {{ page.number }} of {{ page.paginator.num_pages }} </h2>
+        <h2 style="text-align: center"> {{ rushee.get_full_name }} - ({{ rushee.username }}) # {{ page.number }} of {{ page.paginator.num_pages }} </h2>
         <div class="row">
             <div class="col-6" style="max-height:80vh">
                 {% if rushee.profile.image %}
