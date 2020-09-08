@@ -4,15 +4,103 @@
 
 {% block main_headertext %}
     <h2>Edit Profile for {{ request.user.username }}</h2>
+    <div class="row">
+        {% if request.user.profile.image %}
+        <img src="{{ request.user.profile.image.url }}" style="max-width:99%;max-height:80vh;">
+        {% endif %}
+    </div>
 {% endblock %}
 
 {% block content %}
-<form method="post">
-    {% csrf_token %}
-    {{ form }} 
-    <br />
-    <ul class="actions special">
-        <li><input type="submit" value="Save Changes"/></li>
-    </ul>
-</form>
+    {% if userform.errors or profileform.errors %}
+    {% for field in userform %}
+        {% for error in field.errors %}
+            <div class="error">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {% for field in profileform %}
+        {% for error in field.errors %}
+            <div class="error">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {% for error in userform.non_field_errors %}
+        <div class="error">
+            <strong>{{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+    {% for error in profileform.non_field_errors %}
+        <div class="error">
+            <strong>{{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+    {% endif %}
+
+    <form action="{% url 'users:edit_profile' %}" method="post" enctype="multipart/form-data" novalidate id = "profile-form">
+        {% csrf_token %}
+        <div class="row gtr-50 gtr-uniform">
+            <div class="col-6">
+                <h4>{{ userform.first_name.label }}</h4>
+                <p>{{ userform.first_name }}</p>
+            </div>
+            <div class="col-6">
+                <h4>{{ userform.last_name.label }}</h4>
+                <p>{{ userform.last_name }}</p>
+            </div>
+            <div class="col-6 col-12-mobile">
+                <h4>{{ profileform.preferred_name.label }}</h4>
+                <p>{{ profileform.preferred_name }}</p>
+            </div>
+            <div class="col-6 col-12-mobile">
+                <h4>{{ userform.email.label }}</h4>
+                <p>{{ userform.email }}</p>
+            </div>
+            <div class="col-6">
+                <h4>{{ profileform.pronouns.label }}</h4>
+                <div class="row gtr-50 gtr-uniform">
+                    <div class="col-10">
+                        <p>{{ profileform.pronouns }}</p>
+                    </div>
+                    <div class="col-1">
+                        <a href="{% url 'users:pronouns_create' %}" id="add_pronouns" onclick="return showAddPopup(this);" class="icon fa-plus"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <h4>{{ profileform.gender.label }}</h4>
+                <div class="row gtr-50 gtr-uniform">
+                    <div class="col-10">
+                        <p>{{ profileform.gender }}</p>
+                    </div>
+                    <div class="col-1">
+                        <a href="{% url 'users:gender_create' %}" id="add_gender" onclick="return showAddPopup(this);" class="icon fa-plus"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <h4>{{ profileform.race.label }}</h4>
+                <div class="row gtr-50 gtr-uniform">
+                    <div class="col-10">
+                        <p>{{ profileform.race }}</p>
+                    </div>
+                    <div class="col-1">
+                        <a href="{% url 'users:race_create' %}" id="add_race" onclick="return showAddPopup(this);" class="icon fa-plus"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <h4>{{ profileform.image.label }}</h4>
+                <p>{{ profileform.image }}</p>
+            </div>
+            <div class="col-12">
+                <ul class="actions special">
+                    <li><input type="submit" value="Save Changes" /></li>
+                    <li><a href="{{ url }}" class="button alt">Clear</a></li>
+                </ul>
+            </div>    
+        </div>
+    </form>
 {% endblock %}

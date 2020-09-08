@@ -3,7 +3,7 @@ from base.admin import admin_site
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User,Group
 
-from .models import Profile, SignupToken
+from .models import Gender, Pronouns, Race, Profile, SignupToken
 
 # Register your models here.
 
@@ -24,3 +24,6 @@ class CustomUserAdmin(UserAdmin):
 admin_site.register(Group)
 admin_site.register(User, CustomUserAdmin)
 admin_site.register(SignupToken)
+admin_site.register(Gender)
+admin_site.register(Pronouns)
+admin_site.register(Race)

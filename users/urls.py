@@ -7,9 +7,12 @@ from . import views
 
 app_name = 'users'
 urlpatterns = [
-    path('edit_profile/', views.edit_profile, name='edit_profile'),
+    path('edit_profile', views.edit_profile, name='edit_profile'),
     path('password_change/', base_views.password_change, name='password_change'),
     path('', include('django.contrib.auth.urls')),
     path('signup', views.signup, name='signup'),
     path('signupqr', views.signupqr, name='signupqr'),
+    path('gender/create', views.GenderCreatePopup, name='gender_create'),
+    path('pronouns/create', views.PronounsCreatePopup, name='pronouns_create'),
+    path('race/create', views.RaceCreatePopup, name='race_create'),
 ]

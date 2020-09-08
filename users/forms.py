@@ -2,16 +2,42 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.forms import ModelForm
-from .models import SignupToken
+from .models import Gender, Race, Pronouns, Profile, SignupToken
 
 
-class EditProfileForm(ModelForm):
+class GenderForm(ModelForm):
+    class Meta:
+        model = Gender
+        exclude = ['']
+
+class PronounsForm(ModelForm):
+    class Meta:
+        model = Pronouns
+        exclude = ['']
+
+class RaceForm(ModelForm):
+    class Meta:
+        model = Race
+        exclude = ['']
+
+class EditUserForm(ModelForm):
     class Meta:
         model = User
         fields = (
             'email',
             'first_name',
             'last_name',
+        )
+
+class EditProfileForm(ModelForm):
+    class Meta:
+        model = Profile
+        fields = (
+            'preferred_name',
+            'pronouns',
+            'gender',
+            'race',
+            'image',
         )
 
 class BrotherSignupForm(UserCreationForm):

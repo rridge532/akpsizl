@@ -13,7 +13,7 @@ import qrcode
 
 from users.models import Profile, brother_check, exec_check
 from .models import RushNight, RusheeSignin, Interview, Application, Mention, Vote
-from .forms import ChangeNightForm, InterviewForm, RusheeSigninForm, RusheeSignupForm, ApplicationForm, RusheeForm, MentionForm, VoteForm
+from .forms import ChangeNightForm, InterviewForm, RusheeSigninForm, RusheeSignupForm, RusheeProfileForm, ApplicationForm, RusheeForm, MentionForm, VoteForm
 
 # REMOVE THIS, THIS IS JUST FOR TESTING TO CONSISTENTLY SET NIGHT
 if cache.get('night') is None:
@@ -64,7 +64,7 @@ def changenight(request):
         message = "You have successfully changed the night to %s." % newnight
         buttons = (('Rush','/rush'), )
         context = {
-            'person': request.user.first_name,
+            'person': request.user.get_short_name(),
             'message': message,
             'buttons': buttons,
         }
@@ -84,7 +84,7 @@ def createsignin(request, rushee, night):
     buttons = (('New Signin', '/rush/signin'), )
     altbuttons = (('Rush','/rush'), )
     context = {
-        'person': rushee.first_name,
+        'person': rushee.get_short_name(),
         'message': message,
         'buttons': buttons,
         'altbuttons': altbuttons,
@@ -102,6 +102,7 @@ def rusheesignin(request):
         if not night.voting:
             signinform = RusheeSigninForm(request.POST or None)
             signupform = RusheeSignupForm()
+            profileform = RusheeProfileForm()
             if request.POST and signinform.is_valid():
                 rushee = signinform.login(request)
                 if rushee:
@@ -109,6 +110,7 @@ def rusheesignin(request):
             context = {
                 'signinform': signinform,
                 'signupform': signupform,
+                'profileform': profileform,
                 'night': night,
             }
             return render(request, 'rush/rusheesignin.html', context)
@@ -126,14 +128,21 @@ def rusheesignup(request):
         if not night.voting:                                        # only allow if it's not voting night (throws error if done with night check)
             if request.method == 'POST':                            # check that the user is trying to submit
                 signupform = RusheeSignupForm(request.POST)               # pull the POST form data into an object
-                if signupform.is_valid():                                 # check that form data is valid
+                profileform = RusheeProfileForm(request.POST)
+                if signupform.is_valid() and profileform.is_valid():                                 # check that form data is valid
                     rushee = signupform.save(commit=False)                # save the form to an object but don't write it to the db yet
                     rushee.username = rushee.username.lower()       # username should be lowercase
                     rushee.first_name = rushee.first_name.title()   # first letter should be capitalized
                     rushee.last_name = rushee.last_name.title()     # first letter should be capitalized
                     rushee.email = rushee.email.lower()             # email should be lowercase
                     rushee.save()
-                    if rushee:
+                    if rushee:               
+                        profileform = RusheeProfileForm(request.POST, prefix='profileform', instance=brother.profile)
+                        profile = profileform.save(commit=False)
+                        profile.user = brother
+                        if 'profileform-image' in request.FILES:
+                            profile.image = request.FILES['profileform-image']
+                        profile.save()
                         return createsignin(request, rushee, night)
                 context = {
                     'signinform': RusheeSigninForm(),
@@ -203,7 +212,7 @@ def application(request):
                 buttons = (('Edit Application', '/rush/application'), )
                 altbuttons = (('Home', '/'), ('Rush','/rush'), )
                 context = {
-                    'person': rushee.first_name,
+                    'person': rushee.get_short_name(),
                     'message': message,
                     'buttons': buttons,
                     'altbuttons': altbuttons,
@@ -244,7 +253,7 @@ def mention(request):
                     buttons = (('New Mention', '/rush/mention/'), )
                     altbuttons = (('Rush','/rush'), )
                     context = {
-                        'person': request.user.first_name,
+                        'person': request.user.get_short_name(),
                         'message': message,
                         'buttons': buttons,
                         'altbuttons': altbuttons,
@@ -310,7 +319,7 @@ def vote(request, page = 1):
                 editurl = '/rush/vote/%s/' % page.number
                 altbuttons = (('Change Vote', editurl), ('Rush','/rush'), )
                 context = {
-                    'person': request.user.first_name,
+                    'person': request.user.get_short_name(),
                     'message': message,
                     'buttons': buttons,
                     'altbuttons': altbuttons,
