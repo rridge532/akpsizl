@@ -17,8 +17,64 @@ def exec_check(user):
 def user_image_path(instance, filename):
     return 'images/user_{0}/{1}'.format(instance.id, filename)
 
+class Gender(models.Model):
+    gender = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.gender
+
+    class Meta:
+        ordering = ['gender']
+
+class Pronouns(models.Model):
+    subject = models.CharField(max_length=50)
+    object = models.CharField(max_length=50)
+    possessive = models.CharField(max_length=50)
+    possessive_pronoun = models.CharField(max_length=50)
+    reflexive = models.CharField(max_length=50)
+
+    def __str__(self):
+        return "%s/%s/%s" % (self.subject, self.object, self.possessive_pronoun)
+
+    class Meta:
+        ordering = ['subject','object','possessive','possessive_pronoun','reflexive']
+        verbose_name_plural = 'pronouns'
+
+class Race(models.Model):
+    race = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.race
+
+    class Meta:
+        ordering = ['race']
+
+# GENDER_CHOICES = [
+#     (1, 'Man'),
+#     (2, 'Woman'),
+#     (3, 'Non-binary'),
+#     (4, 'Other (please specify)'),
+#     (5, 'Prefer not to say'),
+# ]
+
+# RACE_CHOICES = [
+#     (1, 'American Indian / Alaska Native'),
+#     (3, 'Black / African Descent'),
+#     (3, 'East Asian'),
+#     (3, 'Hispanic / Latino'),
+#     (3, 'Middle Eastern'),
+#     (4, 'Native Hawaiian / Pacific Islander'),
+#     (3, 'South Asian'),
+#     (5, 'White'),
+#     (6, 'Prefer not to say'),
+# ]
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    preferred_name = models.CharField(max_length=50, null=True)
+    pronouns = models.ForeignKey(Pronouns, on_delete=models.SET_NULL, null=True)
+    race = models.ForeignKey(Race, on_delete=models.SET_NULL, null=True)
+    gender = models.ForeignKey(Gender, on_delete=models.SET_NULL, null=True)
     isbrother = models.BooleanField(default=False)
     isexec = models.BooleanField(default=False)
     isloa = models.BooleanField(default=False)
@@ -72,4 +128,17 @@ class SignupToken(models.Model):
 def get_user_string(self):
     return "%s (%s)" % (self.get_full_name(), self.username)
 
+def get_custom_short_name(self):
+    if self.profile.preferred_name:
+        return self.profile.preferred_name
+    elif self.first_name:
+        return self.first_name
+    else:
+        return self.username
+
+def get_custom_full_name(self):
+    return "%s %s" % (self.get_short_name(), self.last_name)
+
+User.add_to_class("get_full_name", get_custom_full_name)
+User.add_to_class("get_short_name", get_custom_short_name)
 User.add_to_class("__str__", get_user_string)
