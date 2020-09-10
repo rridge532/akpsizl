@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from users.models import Profile
+from users.models import Profile, Pronouns, Race, Gender
 from .models import RushNight, Interview, RusheeSignin, Mention, Vote, Application
 
 class ChangeNightForm(forms.Form):
@@ -45,6 +45,14 @@ class RusheeSignupForm(UserCreationForm):
         fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', )
 
 class RusheeProfileForm(forms.ModelForm):
+    preferred_name = forms.CharField(max_length=255,
+                                    required=False,
+                                    label="",
+                                    widget=forms.TextInput(attrs = {'placeholder': 'Preferred name'}),)
+    pronouns = forms.ModelChoiceField(queryset=Pronouns.objects.all(), label="", empty_label="Select your pronouns")
+    gender = forms.ModelChoiceField(queryset=Gender.objects.all(), label="", empty_label="Select your gender")
+    race = forms.ModelChoiceField(queryset=Race.objects.all(), label="", empty_label="Select your race")
+
     class Meta:
         model = Profile
         fields = (

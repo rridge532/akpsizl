@@ -51,7 +51,7 @@ class Race(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    preferred_name = models.CharField(max_length=50, null=True)
+    preferred_name = models.CharField(max_length=50, null=True, blank=True)
     pronouns = models.ForeignKey(Pronouns, on_delete=models.SET_NULL, null=True)
     race = models.ForeignKey(Race, on_delete=models.SET_NULL, null=True)
     gender = models.ForeignKey(Gender, on_delete=models.SET_NULL, null=True)

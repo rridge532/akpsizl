@@ -13,8 +13,8 @@
         <link rel="stylesheet" href="{% static 'assets/css/main.css' %}" />
 		<link rel="icon" href="{% static 'images/zllogo.png' %}">
 	</head>
-    <body>
-        <h2 style="text-align: center"> {{ rushee.get_full_name }} - ({{ rushee.username }}) # {{ page.number }} of {{ page.paginator.num_pages }} </h2>
+    <body width>
+        <h2 style="text-align: center"> {{ rushee.get_full_name }} ({{ rushee.username }}) - <i>{{ rushee.profile.pronouns }}</i> | #{{ page.number }} of {{ page.paginator.num_pages }} </h2>
         <div class="row">
             <div class="col-6" style="max-height:80vh">
                 {% if rushee.profile.image %}
@@ -22,22 +22,27 @@
                 {% endif %}
             </div>
             <div class="col-6" style="max-height:80vh">
-                <h4> <strong>MAJOR:</strong> {{ application.major }}</h4>
-                <h4> <strong>YEAR:</strong> {{ application.get_year_in_school_display }}</h4>
-                <h4> <strong>GPA:</strong> {{ application.get_gpa_display }}</h4>
-                <h4> <strong>NIGHTS ATTENDED:</strong> {% for n in nightsattended %}{{ n.night }},{% endfor %}</h4>
+                <div class="row">
+                <div class="col-6">
+                    <h4> <strong>PRONOUNS:</strong> {{ rushee.profile.pronouns }}</h4>
+                    <h4> <strong>MAJOR:</strong> {{ application.major }}</h4>
+                    <h4> <strong>YEAR:</strong> {{ application.get_year_in_school_display }}</h4>
+                    <h4> <strong>GPA:</strong> {{ application.get_gpa_display }}</h4>
+                    <h4> <strong>NIGHTS ATTENDED:</strong> {% for n in nightsattended %}{{ n.night }},{% endfor %}</h4>
+                </div>
+                <div class="col-6">
+                <h4><strong>INTERVIEW SCORES:</strong></h4>
+                    {% for key, val in scores.items %}
+                        <h4 style="margin-left: 1em;"><strong>{{ key.title }}:</strong> {{ val }}</h4>
+                    {% endfor %}
+                </div>
+            </div>
         
                 {% if application.excuses %}
                     <hr />
                     <h4><strong>EXCUSES/CONFLICTS:</strong></h4> <p>{{ application.excuses }}</p>
                 {% endif %}
-        
-                <hr />
-                <h4><strong>INTERVIEW SCORES:</strong></h4>
-                {% for key, val in scores.items %}
-                    <h4><strong>{{ key.title }}:</strong> {{ val }}</h4>
-                {% endfor %}
-                
+
                 <hr />
                 <h4> <strong>NEGATIVE MENTIONS: {{ negativementions|length }}</strong> </h4>
                 {% for mention in negativementions %}
@@ -76,5 +81,5 @@
 			<script src="{% static 'assets/js/util.js' %}"></script>
 			<script src="{% static 'assets/js/main.js' %}"></script>
 
-	</body>
+    </body>
 </html>

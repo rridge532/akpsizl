@@ -101,8 +101,8 @@ def rusheesignin(request):
     if night:
         if not night.voting:
             signinform = RusheeSigninForm(request.POST or None)
-            signupform = RusheeSignupForm()
-            profileform = RusheeProfileForm()
+            signupform = RusheeSignupForm(request.POST or None, prefix='signupform')
+            profileform = RusheeProfileForm(request.POST or None, prefix='profileform')
             if request.POST and signinform.is_valid():
                 rushee = signinform.login(request)
                 if rushee:
@@ -127,8 +127,8 @@ def rusheesignup(request):
     if night:                                                       # only allow if it's during rush
         if not night.voting:                                        # only allow if it's not voting night (throws error if done with night check)
             if request.method == 'POST':                            # check that the user is trying to submit
-                signupform = RusheeSignupForm(request.POST)               # pull the POST form data into an object
-                profileform = RusheeProfileForm(request.POST)
+                signupform = RusheeSignupForm(request.POST, prefix='signupform')               # pull the POST form data into an object
+                profileform = RusheeProfileForm(request.POST, prefix='profileform')
                 if signupform.is_valid() and profileform.is_valid():                                 # check that form data is valid
                     rushee = signupform.save(commit=False)                # save the form to an object but don't write it to the db yet
                     rushee.username = rushee.username.lower()       # username should be lowercase
@@ -137,16 +137,17 @@ def rusheesignup(request):
                     rushee.email = rushee.email.lower()             # email should be lowercase
                     rushee.save()
                     if rushee:               
-                        profileform = RusheeProfileForm(request.POST, prefix='profileform', instance=brother.profile)
+                        profileform = RusheeProfileForm(request.POST, prefix='profileform', instance=rushee.profile)
                         profile = profileform.save(commit=False)
-                        profile.user = brother
+                        rushee.profile = profile
                         if 'profileform-image' in request.FILES:
-                            profile.image = request.FILES['profileform-image']
-                        profile.save()
+                            rushee.profile.image = request.FILES['profileform-image']
+                        rushee.save()
                         return createsignin(request, rushee, night)
                 context = {
                     'signinform': RusheeSigninForm(),
                     'signupform': signupform,
+                    'profileform': profileform,
                     'night': night,
                 }
                 return render(request, 'rush/rusheesignin.html', context)   # if submitted but form is not valid, reload with errors

@@ -30,6 +30,9 @@ class EditUserForm(ModelForm):
         )
 
 class EditProfileForm(ModelForm):
+    preferred_name = forms.CharField(required=False)
+    pronouns = forms.ModelChoiceField(queryset=Pronouns.objects.all(), empty_label="Select your pronouns")
+
     class Meta:
         model = Profile
         fields = (
